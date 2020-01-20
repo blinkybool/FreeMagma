@@ -1,0 +1,4 @@
+magma_env
+*.cache
+*__pycache__
+*.vscode
