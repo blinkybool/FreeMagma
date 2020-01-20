@@ -28,6 +28,10 @@ class MagmaProduct:
 		self.funcID = funcID
 		self.args = args
 		self.height = max((arg.height + 1 for arg in args), default=0)
+		self.rep = '({}{})'.format(funcID, ''.join(arg.rep for arg in args))
+
+	def __eq__(self, value):
+	 return type(self) == type(value) and self.rep == value.rep
 
 	def __len__(self):
 		return self.args.__len__()
@@ -179,7 +183,7 @@ class Mountains(Catalan):
 
 
 if __name__ == "__main__":
-	for i in range(8):
+	for i in range(12):
 		print(f'Catalan Size: {i}')
 		print('----------------')
 		for catalan_product in Catalan.catalan_products(i):
