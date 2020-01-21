@@ -29,14 +29,6 @@ class Catalan:
 			result = cls.multiply_cache[cartesian] = cls.binary_op(cls.multiply(fst), cls.multiply(snd))
 			return result
 
-class Cartesian(Catalan):
-	generator = lambda: ()
-	binary_op = lambda fst, snd: (fst, snd)
-
-	@classmethod
-	def factorise(cls, cartesian):
-		return cartesian
-
 	@classmethod
 	def products(cls, n):
 		if n in cls.generator_cache: return cls.generator_cache[n]
@@ -47,6 +39,16 @@ class Cartesian(Catalan):
 					for snd in cls.products(n - i - 1)
 		)
 		return cls.generator_cache[n]
+
+class Cartesian(Catalan):
+	generator = lambda: ()
+	binary_op = lambda fst, snd: (fst, snd)
+
+	@classmethod
+	def factorise(cls, cartesian):
+		return cartesian
+
+
 
 class PrefixString(Catalan):
 	generator = lambda: 'o'
@@ -121,7 +123,7 @@ for Catalan_Family in [Catalan] + Catalan.__subclasses__():
 	Catalan_Family.multiply_cache = {Cartesian.generator(): Catalan_Family.generator()}
 
 if __name__ == "__main__":
-	print(len(Cartesian.products(13)))
-	for prod in Cartesian.products(13):
-		Cartesian.fmap_to(Mountains)(prod)
-		Cartesian.fmap_to(Brackets)(prod)
+	print(len(Cartesian.products(9)))
+	for prod in Cartesian.products(5):
+		print(Cartesian.fmap_to(Mountains)(prod))
+		print(Cartesian.fmap_to(Brackets)(prod))
