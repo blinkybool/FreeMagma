@@ -3,7 +3,7 @@
 class Catalan:
   generator = lambda: ()
   binary_op = lambda fst, snd: (fst, snd)
-  factorise = lambda args: args
+  factorise = lambda arg: arg
 
   @classmethod
   def get_fmap(cls, Target_Catalan):
