@@ -1,18 +1,24 @@
 import unittest
-from magma import Brackets, Mountains
+from magma import Catalan, Brackets, Mountains
 
-class TestBrackets(unittest.TestCase):
+class TestMagma(unittest.TestCase):
 
-  def test_identity(self):
-    brackets = '()()((()((()))))'
-    self.assertEqual(Brackets.identity()(brackets), brackets)
-
-class TestMountains(unittest.TestCase):
-
-  def test_identity(self):
+  @classmethod
+  def setUpClass(cls):
+    brackets = '{}{}{{{}{{{}}}}}'
     mountain = '\n'.join(
                         [r'     /\       ',
                          r'    /  \/\    ',
                          r' /\/      \   ',
                          r'/          \/' + '\\']) # can't end raw-string literal in a backslash
-    self.assertEqual(Mountains.identity()(mountain), mountain)
+
+    catalan_product = (((),()),())
+
+    cls.test_objects = {Brackets: brackets, Mountains: mountain, Catalan: catalan_product}
+
+  def test_identities(self):
+
+    for Catalan_Family in (Catalan, Mountains, Brackets):
+      self.assertEqual(Catalan_Family.identity()(self.test_objects[Catalan_Family]), self.test_objects[Catalan_Family])
+
+
