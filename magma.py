@@ -1,143 +1,94 @@
-from memorize import Memorize
+#!/usr/bin/env python3
 
-class FreeMagma:
-
-	@classmethod
-	def factorise(cls, object):
-		pass
-
-	@classmethod
-	def get_operators(cls):
-		return dict()
-
-	@classmethod
-	def product(cls, magma_product):
-		return cls.get_operators()[len(magma_product.args)][magma_product.funcID](*magma_product.args)
+class Catalan:
+	generator = lambda: None
+	binary_op = lambda *_: None
 
 	@staticmethod
-	def converter(Domain, Codomain):
-		return lambda x: Codomain.product(Domain.factorise(x))
+	def fmap(Domain, Codomain):
+		return lambda x: Codomain.multiply(Domain.factorise(x))
+
+	@classmethod
+	def fmap_to(cls, Codomain):
+		return cls.fmap(cls, Codomain)
 
 	@classmethod
 	def identity(cls):
-		assert cls != FreeMagma
-		return cls.converter(cls, cls)
-
-class MagmaProduct:
-	def __init__(self, funcID, *args):
-		self.funcID = funcID
-		self.args = args
-		self.height = max((arg.height + 1 for arg in args), default=0)
-		self.rep = '({}{})'.format(funcID, ''.join(arg.rep for arg in args))
-
-	def __eq__(self, value):
-	 return type(self) == type(value) and self.rep == value.rep
-
-	def __len__(self):
-		return self.args.__len__()
-
-	def is_generator(self):
-		return len(self) == 0
-
-class MagmaGenerator(MagmaProduct):
-	def __init__(self, funcID):
-		super().__init__(funcID)
-
-class UniqueProduct(MagmaProduct):
-	def __init__(self, *args):
-	 super().__init__(0, *args)
-
-class UniqueGenerator(MagmaGenerator):
-	def __init__(self):
-		super().__init__(0)
-
-class Catalan(FreeMagma):
-
-	GENERATOR_SYMBOL = 'o'
-	PRODUCT_SYMBOL = '*'
+		return cls.fmap(cls, cls)
 
 	@classmethod
-	def catalan_products(cls, n):
-		@Memorize
-		def _catalan_products(n):
-			if n == 0: return [UniqueGenerator()]
-
-			magma_products = []
-			for i in range(n):
-				for fst in _catalan_products(i):
-					for snd in _catalan_products(n - i - 1):
-						magma_products.append(UniqueProduct(fst, snd))
-
-			return magma_products
-		return _catalan_products(n)
+	def factorise(cls, cartesian):
+		raise NotImplementedError()
 
 	@classmethod
-	def catalan_objects(cls, n):
-		return list(map(cls.product, cls.catalan_products(n)))
-
-	@classmethod
-	def infix_rep(cls, magma_product):
-		if magma_product.is_generator():
-			return cls.GENERATOR_SYMBOL 
+	def multiply(cls, cartesian):
+		if cartesian in cls.multiply_cache:
+			return cls.multiply_cache[cartesian]
 		else:
-			fst, snd = magma_product.args
-			return '(' + cls.infix_rep(fst) + cls.PRODUCT_SYMBOL + cls.infix_rep(snd) + ')'
+			fst, snd = cartesian
+			result = cls.multiply_cache[cartesian] = cls.binary_op(cls.multiply(fst), cls.multiply(snd))
+			return result
+
+class Cartesian(Catalan):
+	generator = lambda: ()
+	binary_op = lambda fst, snd: (fst, snd)
 
 	@classmethod
-	def prefix_rep(cls, magma_product):
-		if magma_product.is_generator():
-			return cls.GENERATOR_SYMBOL 
-		else:
-			fst, snd = magma_product.args
-			return cls.PRODUCT_SYMBOL + cls.prefix_rep(fst) + cls.prefix_rep(snd)
+	def factorise(cls, cartesian):
+		return cartesian
 
 	@classmethod
-	def postfix_rep(cls, magma_product):
-		if magma_product.is_generator():
-			return cls.GENERATOR_SYMBOL 
-		else:
-			fst, snd = magma_product.args
-			return cls.postfix_rep(fst) + cls.postfix_rep(snd) + cls.PRODUCT_SYMBOL
+	def products(cls, n):
+		if n in cls.generator_cache: return cls.generator_cache[n]
+
+		cls.generator_cache[n] = list(cls.binary_op(fst, snd)
+			for i in range(n)
+				for fst in cls.products(i)
+					for snd in cls.products(n - i - 1)
+		)
+		return cls.generator_cache[n]
+
+class PrefixString(Catalan):
+	generator = lambda: 'o'
+	binary_op = lambda fst, snd: '*' + fst + snd
+
+class InfixString(Catalan):
+	generator = lambda: 'o'
+	binary_op = lambda fst, snd: '(' + fst + '*' + snd + ')'
+
+class PostfixString(Catalan):
+	generator = lambda: 'o'
+	binary_op = lambda fst, snd: fst + snd + '*'
 
 class Brackets(Catalan):
 	generator = lambda: ''
-	binary_op = lambda fst, snd: Brackets.product(fst) + '(' + Brackets.product(snd) + ')'
-
-	@classmethod
-	def get_operators(cls):
-		if 'operators' not in cls.__dict__:
-			cls.operators = {0: [cls.generator], 2: [cls.binary_op]}
-		return cls.operators
+	binary_op = lambda fst, snd: fst + '{' + snd + '}'
 
 	@classmethod
 	def factorise(cls, brackets):
-		if brackets == '': return UniqueGenerator()
+		if brackets == '': return Cartesian.generator()
 
 		unpaired = 1
 		for i in range(len(brackets) - 2, -1, -1):
-			unpaired += 1 if brackets[i]==')' else -1
+			unpaired += 1 if brackets[i]=='}' else -1
 			if unpaired <= 0: break
 		
 		fst = cls.factorise(brackets[0:i])
 		snd = cls.factorise(brackets[i+1:-1])
-		return UniqueProduct(fst, snd)
+		return Cartesian.binary_op(fst, snd)
 
 class Mountains(Catalan):
-
 	generator = lambda: ''
-	@classmethod
-	def binary_op_vert(cls, fst, snd):
-		separator = '' if fst.is_generator() else '\n'
-		return cls.product(fst) + separator + '\\\n/' if snd.is_generator() else cls.product(fst) + separator + '\\\n ' + cls.product(snd).replace('\n', '\n ') + '\n/'
+	binary_op = lambda *args: Mountains._binary_op(*args)
 
 	@classmethod
-	def binary_op_hori(cls, fst, snd):
-		fst_rows = cls.product(fst).split('\n')
+	def _binary_op(cls, fst, snd):
+		fst_rows = fst.split('\n')
 
-		if snd.is_generator():
+		if snd == cls.generator():
 			snd_rows = [ '/\\' ]
 		else:
-			snd_rows = [' ' + row + ' ' for row in cls.product(snd).split('\n')]
+			snd_rows = [' ' + row + ' ' for row in snd.split('\n')]
 			snd_rows.append('/' + ' ' * (len(snd_rows[0]) - 2) + '\\')
 
 		height = max(len(fst_rows), len(snd_rows))
@@ -148,14 +99,8 @@ class Mountains(Catalan):
 		return '\n'.join(fst_row + snd_row for fst_row, snd_row in zip(fst_rows, snd_rows))
 
 	@classmethod
-	def get_operators(cls):
-		if 'operators' not in cls.__dict__:
-			cls.operators = {0: [cls.generator], 2: [cls.binary_op_hori]}
-		return cls.operators
-
-	@classmethod
 	def factorise(cls, mountain):
-		if mountain == '': return UniqueGenerator()
+		if mountain == '': return Cartesian.generator()
 
 		rows = mountain.split('\n')
 
@@ -168,25 +113,15 @@ class Mountains(Catalan):
 			while len(piece_rows) > 1 and (piece_rows[0].isspace() or piece_rows[0] == ''):
 				piece_rows.pop(0)
 
-		return UniqueProduct(cls.factorise('\n'.join(fst_rows)),
-												 cls.factorise('\n'.join(snd_rows)))
+		return Cartesian.binary_op(cls.factorise('\n'.join(fst_rows)),
+												 			cls.factorise('\n'.join(snd_rows)))
 
-	@classmethod
-	def factorise_vert(cls, mountain):
-		if mountain == '': return UniqueGenerator()
-
-		split_index = mountain.rfind('\n\\') + 1
-		fst = mountain[0:split_index]
-		snd = mountain[split_index + 3:-2].replace('\n ', '\n')
-
-		return UniqueProduct(cls.factorise(fst), cls.factorise(snd))
-
+for Catalan_Family in [Catalan] + Catalan.__subclasses__():
+	Catalan_Family.generator_cache = {0: [Catalan_Family.generator()]}
+	Catalan_Family.multiply_cache = {Cartesian.generator(): Catalan_Family.generator()}
 
 if __name__ == "__main__":
-	for i in range(12):
-		print(f'Catalan Size: {i}')
-		print('----------------')
-		for catalan_product in Catalan.catalan_products(i):
-			print(Mountains.product(catalan_product))
-			print(Brackets.product(catalan_product))
-			print('-'*i*2)
+	print(len(Cartesian.products(13)))
+	for prod in Cartesian.products(13):
+		Cartesian.fmap_to(Mountains)(prod)
+		Cartesian.fmap_to(Brackets)(prod)

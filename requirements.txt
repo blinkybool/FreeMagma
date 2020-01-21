@@ -1,1 +1,0 @@
-memorize.py==1.2

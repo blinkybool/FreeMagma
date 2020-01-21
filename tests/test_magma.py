@@ -4,7 +4,7 @@ from magma import Brackets, Mountains
 class TestBrackets(unittest.TestCase):
 
   def test_identity(self):
-    brackets = '()()((()((()))))'
+    brackets = '{}{}{{{}{{{}}}}}'
     self.assertEqual(Brackets.identity()(brackets), brackets)
 
 class TestMountains(unittest.TestCase):
