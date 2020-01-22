@@ -54,7 +54,15 @@ class Brackets(Catalan):
       if unpaired <= 0: break
     
     return (brackets[0:i], brackets[i+1:-1])
-    
+
+class Brackets2(Catalan, tuple):
+  generator = lambda: Brackets2()
+  binary_op = lambda fst, snd: Brackets2(fst + Brackets2((snd,)))
+  factorise = lambda brackets: (brackets[:-1], brackets[-1])
+
+  def __repr__(self):
+    return ''.join('(' + repr(x) + ')' for x in self)
+
 class Mountains(Catalan):
   generator = lambda: ''
 
@@ -90,10 +98,34 @@ class Mountains(Catalan):
 
     return ('\n'.join(fst_rows),'\n'.join(snd_rows))
 
+class CBT(Catalan):
+
+  @classmethod
+  def tikz(cls, tree, with_env=False, with_full=False):
+    tikz_tree = ''.join({'(': '[', ')': ']', ',': '', ' ':' '}[char] for char in str(tree))
+
+    if with_full:
+      with open('tex_templates/cbt-full.tex') as template:
+        tikz_output = template.read().replace('SUBSTITUTE_CBT', tikz_tree)
+      return tikz_output
+    elif with_env:
+      with open('tex_templates/cbt-env.tex') as template:
+        tikz_output = template.read().replace('SUBSTITUTE_CBT', tikz_tree)
+      return tikz_output
+    else:
+      return tikz_tree
+
+    
+
 for Catalan_Family in [Catalan] + Catalan.__subclasses__():
   Catalan_Family.generator_cache = {0: [Catalan_Family.generator()]}
 
 if __name__ == "__main__":
-  brackets_to_mountains = Brackets.get_fmap(Mountains)
-  for brackets in Brackets.products(8):
-    print(brackets_to_mountains(brackets))
+  # brackets_to_mountains = Brackets.get_fmap(Mountains)
+  # for brackets in Brackets.products(8):
+  #   print(brackets_to_mountains(brackets))
+  # for n in range(5):
+  #   print(Brackets2.products(n))
+
+  for tree in CBT.products(3):
+    print(CBT.tikz(tree, with_env=True))

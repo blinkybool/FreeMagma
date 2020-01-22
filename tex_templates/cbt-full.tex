@@ -1,0 +1,21 @@
+\documentclass[border=10pt]{standalone}
+\usepackage{forest}
+\forestset{%
+  cbt/.style={
+    for tree={
+      circle,
+      draw,
+      fill,
+      s sep'+=10pt,
+      fit=band,
+      if n children=0{fill=none}{},
+    },
+    % root node style
+    where level=0{rectangle, fill=none}{}
+  },
+}
+\begin{document}
+\begin{forest}
+  cbt SUBSTITUTE_CBT
+\end{forest}
+\end{document}
