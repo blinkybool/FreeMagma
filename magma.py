@@ -55,14 +55,6 @@ class Brackets(Catalan):
     
     return (brackets[0:i], brackets[i+1:-1])
 
-class Brackets2(Catalan, tuple):
-  generator = lambda: Brackets2()
-  binary_op = lambda fst, snd: Brackets2(fst + Brackets2((snd,)))
-  factorise = lambda brackets: (brackets[:-1], brackets[-1])
-
-  def __repr__(self):
-    return ''.join('(' + repr(x) + ')' for x in self)
-
 class Mountains(Catalan):
   generator = lambda: ''
 
@@ -100,22 +92,40 @@ class Mountains(Catalan):
 
 class CBT(Catalan):
 
-  @classmethod
-  def tikz(cls, tree, with_env=False, with_full=False):
-    tikz_tree = ''.join({'(': '[', ')': ']', ',': '', ' ':' '}[char] for char in str(tree))
+  @staticmethod
+  def tikz(cbt, with_env=False, with_full=False):
+    tikz_cbt = ''.join({'(': '[', ')': ']', ',': '', ' ':' '}[char] for char in str(cbt))
 
     if with_full:
       with open('tex_templates/cbt-full.tex') as template:
-        tikz_output = template.read().replace('SUBSTITUTE_CBT', tikz_tree)
+        tikz_output = template.read().replace('SUBSTITUTE_CBT', tikz_cbt)
       return tikz_output
     elif with_env:
       with open('tex_templates/cbt-env.tex') as template:
-        tikz_output = template.read().replace('SUBSTITUTE_CBT', tikz_tree)
+        tikz_output = template.read().replace('SUBSTITUTE_CBT', tikz_cbt)
       return tikz_output
     else:
-      return tikz_tree
+      return tikz_cbt
 
-    
+class Triangulation(Catalan):
+  generator = lambda: ((1,2),)
+  
+  @staticmethod
+  def binary_op(fst, snd):
+    fst_num_vertices = max(map(max, fst))
+    snd_num_vertices = max(map(max, snd))
+    return fst + tuple((src+fst_num_vertices-1, tar+fst_num_vertices-1) for src,tar in snd) + ((1, fst_num_vertices + snd_num_vertices - 1),)
+
+  @staticmethod
+  def factorise(triangulation):
+    if triangulation == ((1,3),) or triangulation == ((3,1),): return (((1,2),),((1,2),))
+    num_vertices = max(map(max, triangulation))
+    split = max((max(chord) for chord in triangulation if 1 in chord and num_vertices not in chord), default=2)
+
+    fst = tuple(chord for chord in triangulation if max(chord) <= split)
+    snd = tuple((src-split+1, tar-split+1) for src,tar in triangulation if split <= min(src,tar))
+
+    return (fst, snd)
 
 for Catalan_Family in [Catalan] + Catalan.__subclasses__():
   Catalan_Family.generator_cache = {0: [Catalan_Family.generator()]}
@@ -127,5 +137,15 @@ if __name__ == "__main__":
   # for n in range(5):
   #   print(Brackets2.products(n))
 
-  for tree in CBT.products(3):
-    print(CBT.tikz(tree, with_env=True))
+  # for tree in CBT.products(3):
+  #   print(CBT.tikz(tree, with_env=True))
+
+  # brackets_to_mountains = Brackets.get_fmap(Mountains)
+  # print(brackets_to_mountains('{}{}{{{}{}}}'))
+
+  tri = ((1,3),)
+  fst, snd = Triangulation.factorise(tri)
+  print(tri)
+  print(fst)
+  print(snd)
+  print(Triangulation.binary_op(fst, snd))
