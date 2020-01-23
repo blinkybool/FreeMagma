@@ -1,0 +1,23 @@
+\begin{tikzpicture}
+    
+  \newcommand{\n}{SUB_NUM_VERTICES}
+  \newcommand{\rad}{2cm}
+  \newcommand{\labelOffset}{.4cm}
+  \newcommand{\start}{90+360/\n/2}
+  \newcommand{\vertexAngle}[1]{{\start+360/\n*(#1-1)}}
+  
+  % Draw vertices
+  \foreach \i in {1,...,\n} {
+  \draw[fill] (\vertexAngle{\i}:\rad) circle (3pt) node at (\vertexAngle{\i}:\rad+\labelOffset) {\i};
+  }
+
+  % Draw boundary
+  \draw (\vertexAngle{1}:\rad) \foreach \i in {2,...,\n} {
+      -- (\vertexAngle{\i}:\rad)
+  } -- cycle;
+
+  % Draw chords
+  \foreach \src/\tar in {SUB_CHORDS} {
+    \draw (\vertexAngle{\src}:\rad) -- (\vertexAngle{\tar}:\rad);
+  }
+\end{tikzpicture}

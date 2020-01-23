@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from itertools import chain
+import matplotlib.pyplot as plt
 
 class Catalan:
   generator = lambda: ()
@@ -108,24 +110,37 @@ class CBT(Catalan):
       return tikz_cbt
 
 class Triangulation(Catalan):
-  generator = lambda: ((1,2),)
-  
-  @staticmethod
-  def binary_op(fst, snd):
-    fst_num_vertices = max(map(max, fst))
-    snd_num_vertices = max(map(max, snd))
-    return fst + tuple((src+fst_num_vertices-1, tar+fst_num_vertices-1) for src,tar in snd) + ((1, fst_num_vertices + snd_num_vertices - 1),)
+  generator = lambda: ()
 
   @staticmethod
-  def factorise(triangulation):
-    if triangulation == ((1,3),) or triangulation == ((3,1),): return (((1,2),),((1,2),))
-    num_vertices = max(map(max, triangulation))
+  def num_vertices(triangulation):
+    num_chords = len(triangulation)
+    return (num_chords + 2) if num_chords > 1 else max(map(max, triangulation))
+  
+  @classmethod
+  def binary_op(cls, fst, snd):
+    num_fst = len(fst) + 2
+    num_snd = len(snd) + 2
+    return tuple(chain(fst, ((src+num_fst-1, tar+num_fst-1) for src,tar in snd), ((1, num_fst + num_snd - 1),)))
+
+  @classmethod
+  def factorise(cls, triangulation):
+    num_vertices = cls.num_vertices(triangulation)
     split = max((max(chord) for chord in triangulation if 1 in chord and num_vertices not in chord), default=2)
 
     fst = tuple(chord for chord in triangulation if max(chord) <= split)
     snd = tuple((src-split+1, tar-split+1) for src,tar in triangulation if split <= min(src,tar))
 
     return (fst, snd)
+
+  @staticmethod
+  def tikz(triangulation, radius=5):
+    with open('tex_templates/triangulation-env.tex') as template:
+      num_vertices = len(triangulation) + 2
+      output = template.read().replace('SUB_NUM_VERTICES', str(num_vertices))
+      output = output.replace('SUB_CHORDS', ','.join(f'{src}/{tar}' for src, tar in triangulation if sorted((src,tar)) != (1,num_vertices)))
+    return output
+
 
 for Catalan_Family in [Catalan] + Catalan.__subclasses__():
   Catalan_Family.generator_cache = {0: [Catalan_Family.generator()]}
@@ -143,9 +158,15 @@ if __name__ == "__main__":
   # brackets_to_mountains = Brackets.get_fmap(Mountains)
   # print(brackets_to_mountains('{}{}{{{}{}}}'))
 
-  tri = ((1,3),)
-  fst, snd = Triangulation.factorise(tri)
-  print(tri)
-  print(fst)
-  print(snd)
-  print(Triangulation.binary_op(fst, snd))
+  # tri = ((1,3),)
+  # fst, snd = Triangulation.factorise(tri)
+  # print(tri)
+  # print(fst)
+  # print(snd)
+  # print(Triangulation.binary_op(fst,snd))
+
+  # for n in range(4):
+  #   print(Triangulation.products(n))
+
+  for trianglulation in Triangulation.products(4):
+    print(Triangulation.tikz(trianglulation))
