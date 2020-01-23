@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from itertools import chain
-import matplotlib.pyplot as plt
 
 class Catalan:
   generator = lambda: ()
@@ -111,21 +110,17 @@ class CBT(Catalan):
 
 class Triangulation(Catalan):
   generator = lambda: ()
-
-  @staticmethod
-  def num_vertices(triangulation):
-    num_chords = len(triangulation)
-    return (num_chords + 2) if num_chords > 1 else max(map(max, triangulation))
   
   @classmethod
   def binary_op(cls, fst, snd):
     num_fst = len(fst) + 2
     num_snd = len(snd) + 2
-    return tuple(chain(fst, ((src+num_fst-1, tar+num_fst-1) for src,tar in snd), ((1, num_fst + num_snd - 1),)))
+    num_out = num_fst + num_snd - 1
+    return fst + tuple((src+num_fst-1, tar+num_fst-1) for src,tar in snd) + ((1, num_out),)
 
   @classmethod
   def factorise(cls, triangulation):
-    num_vertices = cls.num_vertices(triangulation)
+    num_vertices = len(trianglulation) + 2
     split = max((max(chord) for chord in triangulation if 1 in chord and num_vertices not in chord), default=2)
 
     fst = tuple(chord for chord in triangulation if max(chord) <= split)
@@ -134,11 +129,17 @@ class Triangulation(Catalan):
     return (fst, snd)
 
   @staticmethod
-  def tikz(triangulation, radius=5):
+  def tikz(triangulation, radius='2cm', vertex_radius='3pt', label_offset='.4cm'):
     with open('tex_templates/triangulation-env.tex') as template:
       num_vertices = len(triangulation) + 2
-      output = template.read().replace('SUB_NUM_VERTICES', str(num_vertices))
-      output = output.replace('SUB_CHORDS', ','.join(f'{src}/{tar}' for src, tar in triangulation if sorted((src,tar)) != (1,num_vertices)))
+      chords_tex_format = ','.join(f'{src}/{tar}' for src, tar in triangulation if sorted((src,tar)) != (1,num_vertices))
+      output = (template.read()
+                .replace('SUB_RADIUS',        str(radius))
+                .replace('SUB_VERTEX_RADIUS', str(vertex_radius))
+                .replace('SUB_LABEL_OFFSET',  str(label_offset))
+                .replace('SUB_NUM_VERTICES',  str(num_vertices))
+                .replace('SUB_CHORDS', chords_tex_format)
+               )
     return output
 
 
@@ -168,5 +169,5 @@ if __name__ == "__main__":
   # for n in range(4):
   #   print(Triangulation.products(n))
 
-  for trianglulation in Triangulation.products(4):
+  for trianglulation in Triangulation.products(3):
     print(Triangulation.tikz(trianglulation))
