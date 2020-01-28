@@ -11,7 +11,7 @@ class DyckPaths(Catalan):
 
     height = 1
     for i in range(len(dyck_path) - 2, -1, -1):
-      height += {'N': 1, 'E': -1}[dyck_path[i]]
+      height += {'N': -1, 'E': 1}[dyck_path[i]]
       if height <= 0: break
     else:
       raise ValueError
