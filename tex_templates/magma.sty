@@ -34,6 +34,8 @@
 \newcommand{\defaultVertexRadius}{3pt}
 \newcommand{\defaultLabelOffset}{0.5}
 
+
+
 \newcommand{\triangulation}[3]{
   % #1 : radius of invisible circle housing the polygon
   % #2 : number of vertices/sides of the polygon
@@ -70,10 +72,12 @@
   % Draw circle
   \draw circle (#1);
   
+  \ifnum0<#2
   % Draw vertices
   \foreach \i in {1,...,#2} {
   \draw[fill] (\nthVertexAngle{#2}{\i}:#1) circle (\defaultVertexRadius) node at (\nthVertexAngle{#2}{\i}:#1+\defaultLabelOffset) {\i};
   }
+  \fi
 
   % Draw chords
   \foreach \src/\tar in {#3} {
@@ -87,9 +91,14 @@
   
   \draw (1,0) -- (\n,0);
   % Draw vertices
-  \foreach \i in {1,...,\n} {
+  \draw[fill] (1,0) circle (\vertexRadius);
+  
+  \ifnum0<#1
+  \foreach \i in {2,...,\n} {
     \draw[fill] (\i,0) circle (\vertexRadius);
   }
+  \fi
+  
   \foreach \src/\tar in {#2} {
     \draw[red] (\tar,0) arc (0:180:{(\tar-\src)/2});
   }
@@ -100,5 +109,4 @@
     \foreach \x/\y in {#1} {-- (\x,\y)} 
   -- cycle;
 }
-
 \endinput
