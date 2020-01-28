@@ -1,5 +1,16 @@
 magmaenv
 *.cache
-*__pycache__
 *.vscode
-.pytest_cache
+
+
+# latex
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+
+# python
+*__pycache__
+*.pytest_cache
+*.pyc

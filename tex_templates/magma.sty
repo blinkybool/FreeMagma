@@ -3,7 +3,6 @@
 
 \RequirePackage{tikz, forest}
 
-\usepackage{forest}
 \forestset{%
   cbt/.style={
     for tree={
@@ -17,33 +16,89 @@
     % root node style
     where level=0{rectangle, fill=none}{}
   },
+  pt/.style={
+    for tree={
+      circle,
+      draw,
+      fill,
+      s sep'+=10pt,
+      fit=band,
+    },
+    % root node style
+    where level=0{rectangle, fill=none}{}
+  },
 }
 
-\newcommand{\something}[5][2]{world}
+\newcommand{\nthVertexAngle}[2]{{90+360/#1/2+360/#1*(#2-1)}}
 
-\newcommand{\triangulation}[3][2]{
-  \newcommand{\n}{#2}
-  \newcommand{\rad}{#1}
-  \newcommand{\labelOffset}{0.4}
-  \newcommand{\vertexRadius}{3pt}
-  \newcommand{\start}{90+360/\n/2}
-  \newcommand{\vertexAngle}[1]{{\start+360/\n*(##1-1)}}
+\newcommand{\defaultVertexRadius}{3pt}
+\newcommand{\defaultLabelOffset}{0.5}
+
+\newcommand{\triangulation}[3]{
+  % #1 : radius of invisible circle housing the polygon
+  % #2 : number of vertices/sides of the polygon
+  % #3 : the chords in the triangulations
+  %       - must be comma separated pairs of source and target vertices
+  %         with each pair of the format src/tar
+  %         e.g. 4/6,3/6,2/6
   
   % Draw vertices
-  \foreach \i in {1,...,\n} {
-  \draw[fill] (\vertexAngle{\i}:\rad) circle (\vertexRadius) node at (\vertexAngle{\i}:\rad+\labelOffset) {\i};
+  \foreach \i in {1,...,#2} {
+  \draw[fill] (\nthVertexAngle{#2}{\i}:#1) circle (\defaultVertexRadius) node at (\nthVertexAngle{#2}{\i}:#1+\defaultLabelOffset) {\i};
   }
 
   % Draw boundary
   \draw 
-    (\vertexAngle{1}:\rad)
-    \foreach \i in {2,...,\n} {-- (\vertexAngle{\i}:\rad)}
+    (\nthVertexAngle{#2}{1}:#1)
+    \foreach \i in {2,...,#2} {-- (\nthVertexAngle{#2}{\i}:#1)}
     -- cycle;
 
   % Draw chords
   \foreach \src/\tar in {#3} {
-    \draw[red] (\vertexAngle{\src}:\rad) -- (\vertexAngle{\tar}:\rad);
+    \draw[red] (\nthVertexAngle{#2}{\src}:#1) -- (\nthVertexAngle{#2}{\tar}:#1);
   }
+}
+
+\newcommand{\nonCrossingChords}[3]{
+  % #1 : radius of circle
+  % #2 : number of vertices on circle
+  % #3 : the non-crossing chords
+  %       - must be comma separated pairs of source and target vertices
+  %         with each pair of the format src/tar
+  %         e.g. 1/2,3/6,4/5
+  
+  % Draw circle
+  \draw circle (#1);
+  
+  % Draw vertices
+  \foreach \i in {1,...,#2} {
+  \draw[fill] (\nthVertexAngle{#2}{\i}:#1) circle (\defaultVertexRadius) node at (\nthVertexAngle{#2}{\i}:#1+\defaultLabelOffset) {\i};
+  }
+
+  % Draw chords
+  \foreach \src/\tar in {#3} {
+    \draw[red] (\nthVertexAngle{#2}{\src}:#1) -- (\nthVertexAngle{#2}{\tar}:#1);
+  }
+}
+
+\newcommand{\arches}[2]{
+  \newcommand{\n}{#1}
+  \newcommand{\vertexRadius}{3pt}
+  
+  \draw (1,0) -- (\n,0);
+  % Draw vertices
+  \foreach \i in {1,...,\n} {
+    \draw[fill] (\i,0) circle (\vertexRadius);
+  }
+  \foreach \src/\tar in {#2} {
+    \draw[red] (\tar,0) arc (0:180:{(\tar-\src)/2});
+  }
+}
+
+\newcommand{\dyckPath}[1]{
+  \draw (0,0) 
+    \foreach \x/\y in {#1} {-- (\x,\y)} 
+  -- cycle;
 }
 
 \endinput
