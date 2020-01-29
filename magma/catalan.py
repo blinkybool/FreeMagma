@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 class Catalan:
   generator = lambda: ()
   product = lambda fst, snd: (fst, snd)

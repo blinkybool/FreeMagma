@@ -10,7 +10,7 @@ class PrefixStrings(Catalan):
     assert prefix_string[0] == '*'
 
     # stack keeps track of how many arguments still need to be read for the
-    # '*' symbols read so far
+    # '*' symbols read so far (one of 2,1,0)
     stack = []
     for i, char in enumerate(prefix_string):
       if char == '*':

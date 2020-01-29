@@ -45,17 +45,11 @@ class FriezePatterns(Catalan):
       return True
 
     rows = cls.to_pattern_rows(frieze_pattern)
+
+    assert verify_rows(rows)
     
     max_digits = len(str(len(frieze_pattern)-1))
 
     sep = ' ' * max_digits
 
-    return '\n'.join(sep*i + sep.join(f'{x:<{max_digits}}' for x in row) for i, row in enumerate(rows))
-
-  
-    
-
-22151313
-
-
-
+    return '\n'.join(sep*i + sep.join(f'{x:{max_digits}}' for x in row) for i, row in enumerate(rows))
