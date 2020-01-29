@@ -23,16 +23,14 @@ class FriezePatterns(Catalan):
       #        (i,j) <<-- calculating this
       rows[i] = [(rows[i-1][j]*rows[i-1][j+1]-1)//rows[i-2][j+1] for j in range(n-1)]
 
-      #               (-(i+1),i) <<-- calculating this (it is the same number at the end of row[i])
+      #         (-(i+1),i) <<-- calculating this (it is the same number at the end of row[i])
       # (-i,i-1)          (-i,i)
-      #            (-(i-1),i-1)
+      #        (-(i-1),i-1)
       rows[i].append((rows[-i][i-1] * rows[-i][i]-1)//rows[-(i-1)][i-1])
       rows[-(i+1)] = rows[i][-(i+1):] + rows[i][:-(i+1)]
 
     return rows
 
-  
-  
   @classmethod
   def to_ascii(cls, frieze_pattern, generator=False):
     if generator: return ''.join(map(str, frieze_pattern))
