@@ -1,6 +1,18 @@
 from magma import Catalan
 
 class TwoRowTableaux(Catalan):
+  """
+  Standard Young Tableaux of shape (n-1,n-1) 
+  Data Type: tuple(tuple(int))
+  Format: a pair of sequences of positive integers
+  Generator: ((),())
+  Example: (n=5) ((1,2,3,7),(4,5,6,8))
+    +-+-+-+-+
+    |1|2|3|7|
+    +-+-+-+-+
+    |4|5|6|8|
+    +-+-+-+-+
+  """
   generator = lambda: ((),())
 
   @classmethod

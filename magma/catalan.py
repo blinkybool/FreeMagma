@@ -36,6 +36,15 @@ class Catalan:
     cls.norm_cache = {1: [cls.generator()]}
 
   @classmethod
+  def verify(cls, obj):
+    if obj == cls.generator(): return True
+
+    try:
+      return all(map(cls.verify, cls.factorise(obj)))
+    except:
+      return False
+
+  @classmethod
   def to_ascii(cls, obj):
     return str(obj)
 
