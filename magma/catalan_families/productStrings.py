@@ -2,16 +2,21 @@ from magma import Catalan
 
 class PrefixStrings(Catalan):
   """
-  Prefix notation strings representing products in a free magma on one generator,
-    denoted by the symbol 'o', with a binary product '*'
-  Data Type: String
-  Format: words in the alphabet {*,o} where a valid prefix string is either a
+  Prefix notation product strings of length 2m-1 representing products in a free
+    magma on one generator, denoted by the symbol 'o', with a binary product '*'
+  
+  Data Type:
+    String
+  Format:
+    words in the alphabet {*,o} where a valid prefix string is either a
     single 'o', or a '*' followed by two valid prefix strings.
-  Generator: 'o'
-  Example: (n=5) '*o**oo*oo'
+  Generator:
+    'o'
+  Example: (m=5)
+    '*o**oo*oo'
     this is the product of 'o' with '**oo*oo'
   """
-  RS = None
+  ID = 'MA2'
   names = ['Prefix Product Strings', 'Prefix Strings']
   keyword = {'string', 'prefix', '*', 'o', 'product', 'free', 'magma'}
   
@@ -48,16 +53,22 @@ class PrefixStrings(Catalan):
 
 class InfixStrings(Catalan):
   """
-  Infix notation strings representing products in a free magma on one generator,
-    denoted by the symbol 'o', with a binary product represented by juxtaposition.
-  Data Type: String
-  Format: words in the alphabet {*,(,)} where a valid infix string is either a
+  Infix notation product strings of length 3m-2 representing products in a free 
+    magma on one generator, denoted by the symbol 'o', with a binary product
+    represented by juxtaposition.
+  
+  Data Type:
+    String
+  Format:
+    words in the alphabet {*,(,)} where a valid infix string is either a
     single 'o', or two valid infix strings surrounded by a pair of '()'
-  Generator: 'o'
-  Example: (n=5) '(o((oo)(oo)))'
+  Generator:
+    'o'
+  Example: (m=5)
+    '(o((oo)(oo)))'
     this is the product of 'o' with '((oo)(oo))'
   """
-  RS = None
+  ID = 'MA3'
   names = ['Infix Product Strings', 'Infix Strings']
   keyword = {'string', 'infix', '*', '(', ')', '()', 'product', 'free', 'magma'}
 
@@ -89,16 +100,21 @@ class InfixStrings(Catalan):
 
 class PostfixStrings(Catalan):
   """
-  Postfix notation strings representing products in a free magma on one generator,
-    denoted by the symbol 'o', with a binary product '*'
-  Data Type: String
-  Format: words in the alphabet {*,o} where a valid postfix string is either a
+  Postfix notation product strings of length 2m-1  representing products in a free
+    magma on one generator, denoted by the symbol 'o', with a binary product '*'
+  
+  Data Type:
+    String
+  Format:
+    words in the alphabet {*,o} where a valid postfix string is either a
     single 'o', or two valid postfix strings followed by a '*'.
-  Generator: 'o'
-  Example: (n=5) 'ooo*oo***'
+  Generator:
+    'o'
+  Example: (m=5)
+    'ooo*oo***'
     this is the product of 'o' with 'oo*oo**'
   """
-  RS = None
+  ID = 'MA4'
   names = ['Postfix Product Strings', 'Postfix Strings']
   keyword = {'string', 'postfix', '*', 'o', 'product', 'free', 'magma'}
 

@@ -2,21 +2,26 @@ from magma import Catalan, to_tikz_pair_loop, wrap_tikz_env, wrap_tikz_command
 
 class RS61(Catalan):
   r"""
-  Noncrossing, complete, matchings on 2(n-1) vertices, i.e. ways of connecting
-    2(n-1) vertices on a line by n-1 non-intersecting arcs all lying above the line
-  Data Type: tuple(tuple(int))
-  Format: sequences of n-1 pairs of integers from 1 to 2(n-1) where a pair (i,j)
+  Noncrossing, complete, matchings on 2(m-1) vertices, i.e. ways of connecting
+    2(m-1) vertices on a line by m-1 non-intersecting arcs all lying above the
+    line.
+
+  Data Type:
+    tuple(tuple(int))
+  Format:
+    sequences of m-1 pairs of integers from 1 to 2(m-1) where a pair (i,j)
     represents an arc from vertex i to vertex j. No order is imposed on the sequence
     of pairs, nor on the pairs themselves.
-  Generator: ()
-  Example:
+  Generator:
+    ()
+  Example: (m=4)
     ((6,3), (4,5), (1,2))
                  __________
       __        /    __    \ 
      /  \      /    /  \    \ 
     1----2----3----4----5----6
   """
-  RS = 61
+  ID = 'RS61'
   names = ['Nested Matchings', 'Nested Arches', 'Nested Arcs']
   keywords = {'nested', 'matching', 'arch', 'arc'}
   generator = lambda: ()
@@ -42,14 +47,16 @@ class RS61(Catalan):
   
 class RS59(RS61):
   r"""
-  Noncrossing, complete, matchings on 2(n-1) vertices on a circle, i.e. ways of
-    connecting 2(n-1) vertices on a circle by non-intersecting chords.
-  Data Type: tuple(tuple(int))
-  Format: sequences of n-1 pairs of integers from 1 to 2(n-1) where a pair (i,j)
+  Noncrossing, complete, matchings on 2(m-1) vertices on a circle, i.e. ways of
+    connecting 2(m-1) vertices on a circle by non-intersecting chords.
+  Data Type:
+    tuple(tuple(int))
+  Format: sequences of m-1 pairs of integers from 1 to 2(m-1) where a pair (i,j)
     represents a chord from vertex i to vertex j. No order is imposed on the
     sequence of pairs, nor on the pairs themselves.
-  Generator: ()
-  Example:
+  Generator:
+    ()
+  Example: (m=4)
     ((6,3), (4,5), (1,2))
          .....    
       . 1     6 .   
@@ -61,7 +68,7 @@ class RS59(RS61):
       ' 3     4 ' 
          '''''
   """
-  RS = 61
+  ID = 'RS59'
   names = ['Noncrossing Chords']
   keywords = {'nested', 'noncrossing', 'nonintersecting' 'matching', 'chords'}
 

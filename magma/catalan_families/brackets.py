@@ -1,13 +1,19 @@
 from magma import Catalan
 
-class RS3(Catalan):
-  '''
-  Binary parenthisations of a string n-1 x's i.e. xxxxxx -> 
-  Example: (n=5) ((x)((x)(x)))(x)((x)(x))
-  Data Type: String
-  Format: words in the alphabet {(,)} (no x's)
-  '''
-  RS = 3
+class MatchingBrackets(Catalan):
+  """
+  Arrangements of m-1 pairs of left and right brackets which are 'valid'/'matched'
+    i.e. scanning from left to right, there are always more left brackets than
+    right brackets in the cummulative counts
+    
+  Data Type:
+    String
+  Format:
+    words in the alphabet {(,)}
+  Example: (m=5)
+    ()()(())
+  """
+  ID = 'MA5'
   names = ['Matching Brackets', 'Balanced Parenthesis']
   keywords = {'ascii', 'brackets', '(', ')', '()'}
   generator = lambda: ''
