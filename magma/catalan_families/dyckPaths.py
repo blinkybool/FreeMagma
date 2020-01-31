@@ -100,13 +100,13 @@ class RS25(RS24):
   product = lambda fst, snd: fst + 'U' + snd + 'D'
 
   @classmethod
-  def factorise(mountain):
+  def factorise(cls, mountain):
     assert len(mountain) >= 2
     assert mountain[-1] == 'D'
 
     height = 1 
     for i in range(len(mountain) - 2, -1, -1):
-      height += {'U': 1, 'D': -1}[mountain[i]]
+      height += {'U': -1, 'D': 1}[mountain[i]]
       if height <= 0: break
     else:
       raise ValueError
