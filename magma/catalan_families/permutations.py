@@ -1,6 +1,7 @@
 from magma import Catalan
 
-class RS115(Catalan):
+# TODO inherit from Catalan once factorise implemented
+class RS115:
   """
   Permutations a1 a2 ... am-1 of [m-1] with longest decreasing subsequence of
     length at most 2 (no integers i < j < k such that ai > aj > ak)
@@ -15,13 +16,21 @@ class RS115(Catalan):
   Example: (m=5)
     (3,1,2,4)
   """
+
   ID = 'RS115'
   names = ['321 Avoiding Permutations']
   keywords = {'permutations', 'sequence', 'avoiding', '321', 'three', 'two', 'one'}
+
   generator = lambda: ()
   
   @classmethod
   def product(cls, fst, snd):
+    # TODO implement permutations product
+    pass
+
+  @classmethod
+  def factorise(cls, permutation):
+    # TODO implement permutations factorise
     pass
 
   @classmethod

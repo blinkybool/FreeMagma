@@ -13,11 +13,20 @@ class Catalan:
     or an ordered pair of cartesian magma objects. A cartesian magma object has
     norm 1 if its the generator, otherwise its norm is the sum of the norms of 
     its two subobjects.
-  Data Type: tuple(tuple(...)) (recursive)
-  Format: () or a tuple-pair of Cartesian Magma objects
-  Generator: ()
-  Example: (m=5) (((),((),())),((),()))
+  Data Type:
+    tuple(tuple(...)) (recursive)
+  Format:
+    () or a tuple-pair of Cartesian Magma objects
+  Generator:
+    ()
+  Example:
+    (m=5) (((),((),())),((),()))
   """
+  
+  ID = 'MA1'
+  names = ['Cartesian Free Magma']
+  keywords = {'catalan', 'cartesian', 'free', 'magma', 'tuple'}
+
   generator = lambda: ()
   product = lambda fst, snd: (fst, snd)
   factorise = lambda arg: arg

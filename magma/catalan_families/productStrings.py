@@ -86,7 +86,9 @@ class InfixStrings(Catalan):
     assert infix_string[-1] == ')'
 
     balance = 0
-    for i, char in enumerate(infix_string[1:]):
+    iterator = enumerate(infix_string)
+    next(iterator)
+    for i, char in iterator:
       if char == '(':
         balance += 1
       elif char == ')':

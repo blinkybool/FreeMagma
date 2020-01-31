@@ -124,7 +124,7 @@ class RS62(Catalan):
   def factorise(cls, matching):
     max_vert = len(matching)+1
 
-    split = max(max(arc) for arc in matching if 1 in arc and max_vert not in arc)
+    split = max((max(arc) for arc in matching if 1 in arc and max_vert not in arc), default=1)
 
     fst = tuple(arc for arc in matching if max(arc) <= split)
     snd = tuple((src-split, tar-split) for src,tar in matching if split < min(src,tar))

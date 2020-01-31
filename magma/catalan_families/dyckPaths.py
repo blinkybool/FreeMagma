@@ -170,7 +170,7 @@ class RS32(RS25):
 
     height = 2
     for i in range(len(dyck_path) - 3, -1, -1):
-      height += {'U': 1, 'D': -1}[dyck_path[i]]
+      height += {'U': -1, 'D': 1}[dyck_path[i]]
       if height <= 0: break
     else:
       raise ValueError

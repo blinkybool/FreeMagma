@@ -68,6 +68,7 @@ class RS4(RS5):
 
   @classmethod
   def tikz_command(cls, cbt, with_env=False):
+    # TODO implement Binary Tree tikz_command
     raise NotImplementedError
 
 class RS6(Catalan):
@@ -141,8 +142,8 @@ class RS7(RS6):
   keywords = {'planted', 'trivalent', 'plane', 'tree'}
 
   generator = lambda: ((),)
-  product = lambda fst, snd: (fst[0], snd[0])
-  factorise = lambda tree: tree[0]
+  product = lambda fst, snd: ((fst[0], snd[0]),)
+  factorise = lambda tree: tuple((subtree,) for subtree in tree[0])
 
 class RS12(RS6):
   r"""

@@ -1,6 +1,7 @@
 from magma import Catalan
 
-class RS168(Catalan):
+# TODO inherit from Catalan once factorise implemented
+class RS168:
   """
   Standard Young Tableaux of shape (m-1,m-1) 
   
@@ -33,6 +34,11 @@ class RS168(Catalan):
     top = fst_top + (fst_size+1,) + tuple(x+fst_size+1 for x in snd_top)
     bot = fst_bot + tuple(x+fst_size+1 for x in snd_bot) + (fst_size+snd_size+2,)
     return (top, bot)
+
+  @classmethod
+  def factorise(cls, tableaux):
+    # TODO implement tableaux factorise
+    pass
 
   @classmethod
   def direct_norm(cls, tableaux):

@@ -49,14 +49,14 @@ class RS1(Catalan):
   
   @classmethod
   def product(cls, fst, snd):
-    num_fst = len(fst) + 2
-    num_snd = len(snd) + 2
+    num_fst = cls.direct_norm(fst)
+    num_snd = cls.direct_norm(snd)
     num_out = num_fst + num_snd - 1
     return fst + tuple((src+num_fst-1, tar+num_fst-1) for src,tar in snd) + ((1, num_out),)
 
   @classmethod
   def factorise(cls, triangulation):
-    num_vertices = len(triangulation) + 2
+    num_vertices = cls.direct_norm(triangulation)
     split = max((max(chord) for chord in triangulation if 1 in chord and num_vertices not in chord), default=2)
 
     fst = tuple(chord for chord in triangulation if max(chord) <= split)
@@ -70,11 +70,11 @@ class RS1(Catalan):
 
   @classmethod
   def direct_norm(cls, triangulation):
-    return triangulation.count('o')
+    return len(triangulation)+2
 
-  @staticmethod
-  def tikz_command(triangulation, radius='2', with_env=False):
-    num_vertices = len(triangulation) + 2
+  @classmethod
+  def tikz_command(cls, triangulation, radius='2', with_env=False):
+    num_vertices = cls.direct_norm(triangulation)
     chords_tex_format = to_tikz_pair_loop(chord for chord in triangulation if (min(chord), max(chord)) != (1,num_vertices))
     command = wrap_tikz_command('triangulation', radius, num_vertices, chords_tex_format)
     if with_env:
@@ -82,10 +82,10 @@ class RS1(Catalan):
     else:
       return command
 
-  @staticmethod
-  def tikz_full(triangulation, radius='2', vertex_radius='3pt', label_offset='.5'):
+  @classmethod
+  def tikz_full(cls, triangulation, radius='2', vertex_radius='3pt', label_offset='.5'):
     with open(TEX_TEMPLATES_PATH + '/triangulation-full.tex') as template:
-      num_vertices = len(triangulation) + 2
+      num_vertices = cls.direct_norm(triangulation)
       chords_tex_format = to_tikz_pair_loop(chord for chord in triangulation if (min(chord), max(chord)) != (1,num_vertices))
       output = (template.read()
                 .replace('SUB_RADIUS',        str(radius))

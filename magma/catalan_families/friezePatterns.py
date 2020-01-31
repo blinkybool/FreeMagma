@@ -1,6 +1,7 @@
 from magma import Catalan
 
-class RS197(Catalan):
+# TODO inherit from Catalan once factorise written
+class RS197:
   """
   Non-negative integer sequences (a_i) of length m+1 which generate a valid
     frieze pattern of m rows,
@@ -35,6 +36,11 @@ class RS197(Catalan):
   names = ['Frieze Patterns']
   keywords = {'frieze', 'pattern', 'sequence', 'ascii'}
   generator = lambda: (0,0)
+
+  @classmethod
+  def factorise(cls, frieze_pattern):
+    # TODO implement frieze pattern factorise
+    pass
   
   @staticmethod
   def product(fst, snd):

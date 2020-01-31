@@ -1,17 +1,16 @@
 import unittest
-from magma import Catalan, MatchingBrackets, RS25 as Mountains
+from magma import Catalan
 
 class TestCatalan(unittest.TestCase):
 
-  @classmethod
-  def setUpClass(cls):
-    brackets = '()()((()((()))))'
-    mountain = 'UUDUUUDDUDDDUD'
-    catalan_product = (((),()),())
-
-    cls.test_objects = {MatchingBrackets: brackets, Mountains: mountain, Catalan: catalan_product}
+  MAX_NORM = 8
 
   def test_identities(self):
 
-    for Catalan_Family in (Catalan, Mountains, MatchingBrackets):
-      self.assertEqual(Catalan_Family.identity()(self.test_objects[Catalan_Family]), self.test_objects[Catalan_Family])
+    catalan_families = list(Catalan.all_catalan_families())
+
+    for Catalan_Family in catalan_families:
+      identity = Catalan_Family.identity()
+      for m in range(1,self.MAX_NORM+1):
+        for obj in Catalan_Family.products(m):
+          self.assertEqual(identity(obj), obj)
