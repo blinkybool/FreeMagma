@@ -1,6 +1,27 @@
 from magma import Catalan
 
-class TwoRowTableaux(Catalan):
+class RS168(Catalan):
+  """
+  Standard Young Tableaux of shape (m-1,m-1) 
+  
+  Data Type:
+    tuple(tuple(int))
+  Format:
+    a pair of sequences of positive integers
+  Generator:
+    ((),())
+  Example: (m=5)
+    ((1,2,3,7),(4,5,6,8))
+    +-+-+-+-+
+    |1|2|3|7|
+    +-+-+-+-+
+    |4|5|6|8|
+    +-+-+-+-+
+  """
+  ID='RS168'
+  names = ['Two Row Standard Young Tableaux']
+  keywords = {'two', 'row', 'standard', 'young', 'tableaux', 'table', 'sequence'}
+
   generator = lambda: ((),())
 
   @classmethod

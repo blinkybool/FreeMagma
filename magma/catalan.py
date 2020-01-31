@@ -1,4 +1,23 @@
 class Catalan:
+  """
+  Base class for all catalan structures. By default this class provides the
+    'Cartesian Magma' Catalan structure.
+
+  Subclass Specification:
+    A Catalan subclass must specify a 0-input 'generator' function, a 2-input
+    'product' function and a 1-input 'factorise' function. lambda expressions
+    are recommended for simple functions.
+    
+  Cartesian Magma:
+    An object in the cartesian magma is either the generator () (empty tuple),
+    or an ordered pair of cartesian magma objects. A cartesian magma object has
+    norm 1 if its the generator, otherwise its norm is the sum of the norms of 
+    its two subobjects.
+  Data Type: tuple(tuple(...)) (recursive)
+  Format: () or a tuple-pair of Cartesian Magma objects
+  Generator: ()
+  Example: (m=5) (((),((),())),((),()))
+  """
   generator = lambda: ()
   product = lambda fst, snd: (fst, snd)
   factorise = lambda arg: arg
@@ -20,20 +39,29 @@ class Catalan:
     return cls.bijection(cls)
 
   @classmethod
-  def products(cls, n):
-    if n in cls.norm_cache: return cls.norm_cache[n]
+  def products(cls, norm):
+    if norm in cls.norm_cache: return cls.norm_cache[norm]
 
-    cls.norm_cache[n] = list(
+    cls.norm_cache[norm] = list(
       cls.product(fst, snd)
-        for i in range(1,n)
+        for i in range(1,norm)
         for fst in cls.products(i)
-        for snd in cls.products(n - i)
+        for snd in cls.products(norm - i)
     )
-    return cls.norm_cache[n]
+    return cls.norm_cache[norm]
 
   @classmethod
   def init_norm_cache(cls):
     cls.norm_cache = {1: [cls.generator()]}
+
+  @classmethod
+  def verify(cls, obj):
+    if obj == cls.generator(): return True
+
+    try:
+      return all(map(cls.verify, cls.factorise(obj)))
+    except:
+      return False
 
   @classmethod
   def to_ascii(cls, obj):

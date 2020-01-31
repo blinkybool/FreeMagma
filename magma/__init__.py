@@ -8,8 +8,7 @@ from .catalan_families.tableaux import *
 from .catalan_families.dyckPaths import *
 from .catalan_families.productStrings import *
 from .catalan_families.triangulations import *
-from .catalan_families.mountainsAscii import *
-from .catalan_families.nestedMatchings import *
+from .catalan_families.matchings import *
 from .catalan_families.staircasePolygons import *
 from .catalan_families.friezePatterns import *
 
