@@ -31,12 +31,12 @@ class Catalan:
         return Target_Catalan.generator()
       else:
         fst, snd = cls.factorise(domain_elt)
-        return Target_Catalan.product(_bijection(fst), bijection(snd))
+        return Target_Catalan.product(bijection(fst), bijection(snd))
     return bijection
 
   @classmethod
   def identity(cls):
-    return cls.bijection(cls)
+    return cls.get_bijection(cls)
 
   @classmethod
   def products(cls, norm):
