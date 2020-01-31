@@ -19,6 +19,7 @@ class RS57(Catalan):
     |  _|
     |_|  
   """
+  
   ID = 'RS57'
   names = {'Staircase Polygons', 'Parallelogram Polyominoes'}
   keywords = {'staircase', 'polgon', 'parallelogram', 'polyomino', 'lattice', 'path', 'ascii'}
@@ -27,11 +28,10 @@ class RS57(Catalan):
   
   @classmethod
   def product(cls, fst, snd):
-    if fst == cls.generator(): fst = ('N', '')
+    if fst == cls.generator(): fst = ('N', 'N')
     
     fst_left, fst_right = fst
     snd_left, snd_right = snd
-
 
     return (fst_left + snd_left, fst_right[:-1] + snd_right + 'N')
 
@@ -42,46 +42,39 @@ class RS57(Catalan):
     height = left.count('N')
 
     left_walker = right_walker = (width, height)
-
-    left_fst = list(left)
-    left_snd = []
-    right_fst = list(right)
-    right_snd = []
-
-    def gap_size():
-      return left_walker[1] - right_walker[1]
-
-    def backstep(walker, path_fst, path_snd):
-      step_dir = path_fst.pop()
-      path_snd.append(step_dir)
+      
+    def move_back(walker, step_dir):
       if step_dir == 'N':
         return (walker[0], walker[1]-1)
       else:
         assert step_dir == 'E'
         return (walker[0]-1, walker[1])
 
-    while len(left_fst) > 0:
+    assert right[-1] == 'N'
+    split = len(left)
 
-      # move east
-      left_walker = backstep(left_walker, left_fst, left_snd)
+    # Ignore the last (north) step in the right path, effectively undoing the
+    # north shift done by the product, then backtrack the path with the walkers
+    # until the bottom left corner of the snd factor is found.
+    for left_step, right_step in zip(left[::-1], right[-2::-1]):
 
-      while left_fst and left_fst[-1] == 'N':
-        left_walker = backstep(left_walker, left_fst, left_snd)
+      left_walker = move_back(left_walker, left_step)
+      right_walker = move_back(right_walker, right_step)
 
-      while right_walker[0] != left_walker[0]:
-        right_walker = backstep(right_walker, right_fst, right_snd)
+      split -= 1
 
-      if gap_size() <= 1: break
+      # found the bottom left corner of the snd factor
+      if left_walker == right_walker:
+        break
 
-    if left_fst == right_fst == []:
-      fst = ('E', 'E')
-      snd = (''.join(reversed(left_snd[:-1])), ''.join(reversed(right_snd[1:])))
-    else:
-      fst = (''.join(left_fst), ''.join(right_fst) + 'N')
-      snd = (''.join(reversed(left_snd)), ''.join(reversed(right_snd[1:])))
+    fst = (left[:split], right[:split-1] + 'N')
+    snd = (left[split:], right[split-1:-1])
 
-    return fst, snd
+    return (cls.generator() if fst==('N','N') else fst, snd)
 
+  @classmethod
+  def direct_norm(cls, polyomino):
+    return len(polyomino[0])
 
   @classmethod
   def to_ascii(cls, polyomino):
