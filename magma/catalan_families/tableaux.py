@@ -35,6 +35,10 @@ class RS168(Catalan):
     return (top, bot)
 
   @classmethod
+  def direct_norm(cls, tableaux):
+    return len(tableaux[0])+1
+
+  @classmethod
   def to_ascii(cls, tableaux):
     if tableaux == cls.generator():
       return '+\n|\n+\n|\n+'

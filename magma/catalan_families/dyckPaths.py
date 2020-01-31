@@ -37,6 +37,10 @@ class RS24(Catalan):
     
     return (dyck_path[0:i], dyck_path[i+1:-1])
 
+  @classmethod
+  def direct_norm(cls, dyck_path):
+    return len(dyck_path)//2 + 1
+
   @staticmethod
   def to_ascii(dyck_path):
     drawing = AsciiDrawing(2*dyck_path.count('E')+1, dyck_path.count('N')+1)
@@ -100,22 +104,26 @@ class RS25(RS24):
   product = lambda fst, snd: fst + 'U' + snd + 'D'
 
   @classmethod
-  def factorise(cls, mountain):
-    assert len(mountain) >= 2
-    assert mountain[-1] == 'D'
+  def factorise(cls, dyck_path):
+    assert len(dyck_path) >= 2
+    assert dyck_path[-1] == 'D'
 
     height = 1 
-    for i in range(len(mountain) - 2, -1, -1):
-      height += {'U': -1, 'D': 1}[mountain[i]]
+    for i in range(len(dyck_path) - 2, -1, -1):
+      height += {'U': -1, 'D': 1}[dyck_path[i]]
       if height <= 0: break
     else:
       raise ValueError
     
-    return (mountain[0:i], mountain[i+1:-1])
+    return (dyck_path[0:i], dyck_path[i+1:-1])
+
+  @classmethod
+  def direct_norm(cls, dyck_path):
+    return len(dyck_path)//2 + 1
 
   @staticmethod
-  def to_ascii(mountain, trim_rows=True):
-    drawing = AsciiDrawing(len(mountain), len(mountain)//2)
+  def to_ascii(dyck_path, trim_rows=True):
+    drawing = AsciiDrawing(len(dyck_path), len(dyck_path)//2)
     x = 0
     y = 0
 
@@ -123,7 +131,7 @@ class RS25(RS24):
     step_y_dir = {'U': 1, 'D': -1}
 
     drawing.write('/', 0, 0)
-    for prev_step, step in zip(mountain, mountain[1:]):
+    for prev_step, step in zip(dyck_path, dyck_path[1:]):
       x += 1
       if prev_step == step:
         y += step_y_dir[step]
@@ -168,3 +176,7 @@ class RS32(RS25):
       raise ValueError
     
     return (dyck_path[0:i], dyck_path[i+1:-3])
+
+  @classmethod
+  def direct_norm(cls, dyck_path):
+    return len(dyck_path)//4 + 1

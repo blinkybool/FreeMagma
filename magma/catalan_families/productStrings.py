@@ -51,6 +51,10 @@ class PrefixStrings(Catalan):
 
     return (prefix_string[1:split], prefix_string[split:])
 
+  @classmethod
+  def direct_norm(cls, prefix_string):
+    return prefix_string.count('o')
+
 class InfixStrings(Catalan):
   """
   Infix notation product strings of length 3m-2 representing products in a free 
@@ -98,7 +102,11 @@ class InfixStrings(Catalan):
 
     return (infix_string[1:split], infix_string[split:-1])
 
-class PostfixStrings(Catalan):
+  @classmethod
+  def direct_norm(cls, infix_string):
+    return infix_string.count('o')
+
+class PostfixStrings(PrefixStrings):
   """
   Postfix notation product strings of length 2m-1  representing products in a free
     magma on one generator, denoted by the symbol 'o', with a binary product '*'
@@ -126,6 +134,8 @@ class PostfixStrings(Catalan):
     assert len(postfix_string) >= 3
     assert postfix_string[-1] == '*'
 
-    return tuple(prefix_string[::-1] for prefix_string in reversed(PrefixStrings.factorise(postfix_string[::-1])))
+    return tuple(prefix_string[::-1] for prefix_string in reversed(super().factorise(postfix_string[::-1])))
 
-
+  @classmethod
+  def direct_norm(cls, postfix_string):
+    return postfix_string.count('o')

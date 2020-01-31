@@ -41,6 +41,10 @@ class RS197(Catalan):
     return (fst[0] + 1,) + fst[1:-1] + (fst[-1] + snd[0] + 1,) + snd[1:-1] + (snd[-1] + 1,)
 
   @classmethod
+  def direct_norm(cls, frieze_pattern):
+    return len(frieze_pattern) - 1
+
+  @classmethod
   def to_pattern_rows(cls, frieze_pattern):
     n = len(frieze_pattern)
     rows = (([[1] * n] if n > 2 else [])

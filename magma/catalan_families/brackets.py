@@ -35,3 +35,7 @@ class MatchingBrackets(Catalan):
       raise ValueError
     
     return (brackets[0:i], brackets[i+1:-1])
+
+  @classmethod
+  def direct_norm(cls, brackets):
+    return len(brackets)//2 + 1

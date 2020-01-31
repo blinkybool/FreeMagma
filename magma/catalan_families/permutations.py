@@ -23,3 +23,7 @@ class RS115(Catalan):
   @classmethod
   def product(cls, fst, snd):
     pass
+
+  @classmethod
+  def direct_norm(cls, permutation):
+    return len(permutation) + 1

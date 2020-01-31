@@ -41,6 +41,14 @@ class RS61(Catalan):
     return fst, snd
 
   @classmethod
+  def normalise(cls, matching):
+    return tuple(sorted((min(match), max(match)) for match in matching))
+
+  @classmethod
+  def direct_norm(cls, matching):
+    return len(matching)//2 + 1
+
+  @classmethod
   def tikz_command(cls, arches, with_env=False):
     command = wrap_tikz_command('arches', 2*len(arches), to_tikz_pair_loop(arches))
     return wrap_tikz_env('tikzpicture', command) if with_env else command
@@ -122,3 +130,11 @@ class RS62(Catalan):
     snd = tuple((src-split, tar-split) for src,tar in matching if split < min(src,tar))
 
     return (fst, snd)
+
+  @classmethod
+  def normalise(cls, matching):
+    return tuple(sorted((min(match), max(match)) for match in matching))
+
+  @classmethod
+  def direct_norm(cls, matching):
+    return len(matching) + 1
