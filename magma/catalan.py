@@ -25,14 +25,14 @@ class Catalan:
   norm_cache = {}
 
   @classmethod
-  def bijection(cls, Target_Catalan):
-    def _bijection(domain_elt):
+  def get_bijection(cls, Target_Catalan):
+    def bijection(domain_elt):
       if domain_elt == cls.generator():
         return Target_Catalan.generator()
       else:
         fst, snd = cls.factorise(domain_elt)
-        return Target_Catalan.product(_bijection(fst), _bijection(snd))
-    return _bijection
+        return Target_Catalan.product(_bijection(fst), bijection(snd))
+    return bijection
 
   @classmethod
   def identity(cls):
@@ -62,6 +62,14 @@ class Catalan:
       return all(map(cls.verify, cls.factorise(obj)))
     except:
       return False
+    
+  @classmethod
+  def normalise(cls, obj):
+    return obj
+
+  @classmethod
+  def equal(cls, a, b):
+    return cls.normalise(a) == cls.normalise(b)
 
   @classmethod
   def to_ascii(cls, obj):
@@ -70,6 +78,10 @@ class Catalan:
   @classmethod
   def norm(cls, obj):
     return 1 if obj==cls.generator() else sum(map(cls.norm, cls.factorise(obj)))
+
+  @classmethod
+  def direct_norm(cls, obj):
+    raise NotImplementedError
 
   @classmethod
   def all_catalan_families(cls):
