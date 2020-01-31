@@ -158,7 +158,7 @@ class RS32(RS25):
   @classmethod
   def factorise(cls, dyck_path):
     assert len(dyck_path) >= 4
-    assert dyck_path[-2:] == 'DD'
+    assert dyck_path[-3:] == 'UDD'
 
     height = 2
     for i in range(len(dyck_path) - 3, -1, -1):
