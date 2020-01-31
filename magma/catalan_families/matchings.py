@@ -76,3 +76,49 @@ class RS59(RS61):
   def tikz_command(cls, chords, radius=2, with_env=False):
     command = wrap_tikz_command('nonCrossingChords', radius, 2*len(chords), to_tikz_pair_loop(chords))
     return wrap_tikz_env('tikzpicture', command) if with_env else command
+
+
+class RS62(Catalan):
+  r"""
+  Graphs on m vertices lying on an (invisible) horizontal line L with m-1 arcs
+    connecting the vertices such that:
+    (a) the arcs do not pass below L (they can sit along L)
+    (b) the graph is a tree
+    (c) no two arcs intersect in their interiors
+    (d) at a vertex, all vertices exit in the same direction
+  
+  Data Type:
+    tuple(tuple(int))
+  Format:
+    an unordered list of unordered pairs of vertices, where each pair (i,j)
+    represents an arc from the ith vertex to the jth vertex
+  Generator: ()
+  Example: (m=4)
+    ((1,3), (5,1), (2,3))
+        ________
+       /        \
+      /______    \
+     //      \    \
+    1    2----3    4
+  """
+  ID = 'RS62'
+  names = ['Outflow Non-Crossing Trees']
+  keywords = {'arc', 'arch', 'graph', 'noncrossing', 'crossing', 'vertices'}
+  generator = lambda: ()
+
+  @classmethod
+  def product(cls, fst, snd):
+    max_fst = len(fst)+1
+    max_snd = len(snd)+1
+    return fst + ((1,max_fst + max_snd),) + tuple((src+max_fst, tar+max_fst) for src, tar in snd)
+
+  @classmethod
+  def factorise(cls, matching):
+    max_vert = len(matching)+1
+
+    split = max(max(arc) for arc in matching if 1 in arc and max_vert not in arc)
+
+    fst = tuple(arc for arc in matching if max(arc) <= split)
+    snd = tuple((src-split, tar-split) for src,tar in matching if split < min(src,tar))
+
+    return (fst, snd)

@@ -31,6 +31,45 @@ class RS5(Catalan):
 
     return wrap_tikz_env('forest', tikz_cbt) if with_env else tikz_cbt
 
+class RS4(RS5):
+  """
+  Binary Trees with m-1 vertices.
+
+  Data Type:
+    None | tuple() | tuple(..., ...) (recursive)
+  Format:
+    a BT is either None, an empty tuple (leaf node) or a pair of BTs indicating
+    the left and right subtree.
+  Generator:
+    None
+  Examples:
+    (m=1)
+    None
+    <empty>
+
+    (m=2)
+    ()
+    *
+
+    (m=3)
+    ((), None)
+      *
+     /
+    *
+  """
+
+  ID = 'RS4'
+  names = ['Binary Trees']
+  keywords = {'binary', 'tree'}
+
+  generator = lambda: None
+  product = lambda fst, snd: () if fst==snd==None else (fst, snd)
+  factorise = lambda tree: (None, None) if tree==() else tree
+
+  @classmethod
+  def tikz_command(cls, cbt, with_env=False):
+    raise NotImplementedError
+
 class RS6(Catalan):
   r"""
   Plane Trees with m-nodes.
@@ -68,3 +107,71 @@ class RS6(Catalan):
       raise ValueError
 
     return wrap_tikz_env('forest', tikz_pt) if with_env else tikz_pt
+
+class RS7(RS6):
+  r"""
+  Planted (root has one child) trivalent (internal vertices have 3 adjacent
+    vertices - ie. two children) Plane Trees with 2m vertices. Basically CBTs
+    (see RS5) with a new root.
+  
+  Data Type:
+    tuple(tuple(...)) (recursive)
+  Format:
+    a singleton tuple with a CBT in it. A CBT is a tuple of 0 or 2 CBTs.
+  Generator:
+    ((),)
+  Examples:
+    (m=1)
+    ((),)
+    *
+    |
+    *
+
+    (m=2)
+    (((),()),)
+      *
+      |
+      *
+     / \
+    *   *
+  """
+
+  ID = 'RS7'
+  names = ['Planted Trivalent Plane Trees']
+  keywords = {'planted', 'trivalent', 'plane', 'tree'}
+
+  generator = lambda: ((),)
+  product = lambda fst, snd: (fst[0], snd[0])
+  factorise = lambda tree: tree[0]
+
+class RS12(RS6):
+  r"""
+  Plane Trees with m-1 internal vertices, such that
+    (1) each vertex has at most 2 children
+    (2) each left child of a vertex with 2 children is an internal vertex.
+  
+  Data Type:
+    tuple(tuple(...)) (recursive)
+  Format:
+    a tuple of zero or more tuples.
+  Generator:
+    ()
+  Example: (m=4)
+    ( ( ( ((),) , () ) , () ) , () )
+        *
+       / \
+      *   *
+     / \
+    *   *
+    |
+    *
+  """
+  
+  ID = 'RS12'
+  names = ['Left-Internal Unary-Binary Tree']
+  keywords = {'left', 'internal', 'unary', 'binary', 'tree'}
+
+  generator = lambda: ()
+  product = lambda fst, snd: (snd,) if fst == () else (fst, snd)
+  factorise = lambda tree: ((), tree[0]) if len(tree)==1 else tree
+

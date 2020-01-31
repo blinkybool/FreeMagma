@@ -81,8 +81,8 @@ class RS24(Catalan):
 
 class RS25(RS24):
   r"""
-  Lattice Paths from (0,0) to (2(m-1),0) with steps (1,1), (1,-1) that never fall
-    below the x-axis.
+  Dyck Paths of 2(m-1) steps, ie. Lattice Paths from (0,0) to (2(m-1),0) with
+    steps (1,1), (1,-1) that never fall below the x-axis.
     
   Data Type:
     String
@@ -130,3 +130,41 @@ class RS25(RS24):
       drawing.write(step_char[step], x, y)
 
     return drawing.get_str(trim_rows=trim_rows)
+
+class RS32(RS25):
+  r"""
+  Dyck Paths (see RS25) of length 4(m-1) where any subsequence of consecutive
+    downward steps is exactly length 2.
+  
+  Data Type:
+    String
+  Format:
+    words in the alphabet {U,D} where U is a (1,1) step and D is a (1,-1) step.
+  Generator:
+    ''
+  Example: (m=4)
+    'UUDDUUUDDUDD'
+          /\
+     /\  /  \/\
+    /  \/      \
+  """
+  ID = 'RS32'
+  names = ['Dyck Paths with 2 Descending Steps']
+  keywords = {'dyck', 'path', '2', 'descending', 'step', 'ascii'}
+
+  generator = lambda: ''
+  product = lambda fst, snd: fst + 'U' + snd + 'UDD'
+
+  @classmethod
+  def factorise(cls, dyck_path):
+    assert len(dyck_path) >= 4
+    assert dyck_path[-2:] == 'DD'
+
+    height = 2
+    for i in range(len(dyck_path) - 3, -1, -1):
+      height += {'U': 1, 'D': -1}[dyck_path[i]]
+      if height <= 0: break
+    else:
+      raise ValueError
+    
+    return (dyck_path[0:i], dyck_path[i+1:-3])
