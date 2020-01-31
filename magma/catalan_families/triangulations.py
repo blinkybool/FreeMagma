@@ -1,18 +1,46 @@
 from magma import Catalan, TEX_TEMPLATES_PATH, wrap_tikz_command, wrap_tikz_env, to_tikz_pair_loop
 
 class RS1(Catalan):
-  """
-  Permutations a1 a2 ... am-1 of [m-1] with longest decreasing subsequence of
-    length at most 2 (no integers i < j < k such that ai > aj > ak).
+  r"""
+  Triangulations of an (m+1)-gon (with m-1 triangles).
   
   Data Type:
-    tuple(int)
+    tuple(tuple(int))
   Format:
-    sequences of integers in the set [1,m-1]
+    tuple of pairs of vertex numbers, where a pair (i,j) is either an internal
+    chord from vertex i to vertex j, or the outer edge from the initial vertex 1
+    to the last numbered vertex (m+1).
+
+    The vertices are numbered 1 to (m+1), counterclockwise, such
+    that (1,m+1) edge is positioned horizontally at the top (see example).
+
+    If m > 1, the top edge is included amongst the list of internal chords.
+
+    The order of the chords does not matter, neither does the order of source
+    and target vertices within a chord. This means equality of triangulation
+    objects is not python object equality.
+
   Generator:
     ()
-  Example: (m=5)
-    (3,1,2,4)
+  Examples:
+    (m=1)
+    ()
+    1 -- 2
+
+    (m=2)
+    ((1,3),)
+    1 --- 3
+     \   /
+       2
+
+    (m=3)
+    ((1,4),(2,4))
+    1 ------ 4
+    |      . |
+    |    .   |
+    |  .     |
+    |.       |
+    2 ------ 3
   """
   ID = 'RS1'
   names = ['Triangulations']
@@ -36,6 +64,14 @@ class RS1(Catalan):
 
     return (fst, snd)
 
+  @classmethod
+  def normalise(cls, triangulation):
+    return tuple(sorted((min(chord), max(chord)) for chord in triangulation))
+
+  @classmethod
+  def direct_norm(cls, triangulation):
+    return triangulation.count('o')
+
   @staticmethod
   def tikz_command(triangulation, radius='2', with_env=False):
     num_vertices = len(triangulation) + 2
@@ -45,7 +81,6 @@ class RS1(Catalan):
       return wrap_tikz_env('tikzpicture', command)
     else:
       return command
-    
 
   @staticmethod
   def tikz_full(triangulation, radius='2', vertex_radius='3pt', label_offset='.5'):
