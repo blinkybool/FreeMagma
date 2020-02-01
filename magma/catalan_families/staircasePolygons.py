@@ -21,7 +21,7 @@ class RS57(Catalan):
   """
   
   ID = 'RS57'
-  names = {'Staircase Polygons', 'Parallelogram Polyominoes'}
+  names = ['Staircase Polygons', 'Parallelogram Polyominoes']
   keywords = {'staircase', 'polgon', 'parallelogram', 'polyomino', 'lattice', 'path', 'ascii'}
 
   generator = lambda: ('E','E')
