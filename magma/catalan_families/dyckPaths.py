@@ -1,13 +1,22 @@
 from magma import Catalan, AsciiDrawing, wrap_tikz_command, wrap_tikz_env, to_tikz_pair_loop
 
 class RS24(Catalan):
-  '''
-  Lattice Paths from (0,0) to (n-1,n-1) with steps (0,1), (1,0) that never rise
-  above the diagonal
-  Data Type: String
-  Format: words in the alphabet {E,N} where E is a (0,1) step and N is a (1,0) step.
-  '''
-  RS = 24
+  """
+  Lattice Paths from (0,0) to (m-1,m-1) with steps (0,1), (1,0) that never rise
+    above the diagonal
+  Data Type:
+    String
+  Format:
+    words in the alphabet {E,N} where E is a (0,1) step and N is a (1,0) step.
+  Example: (m=5)
+    'ENEENNEN'
+            .
+          ._|
+        . |  
+      ._ _|  
+    ._|      
+  """
+  ID = 'RS24'
   names = {'dyck paths', 'lattice paths'}
   keywords = {'dyck', 'paths', 'lattice', 'steps', 'geometric', 'E', 'N', 'ascii'}
   generator = lambda: ''
@@ -70,35 +79,39 @@ class RS24(Catalan):
 
     return wrap_tikz_env('tikzpicture', command) if with_env else command
 
-
-
 class RS25(RS24):
-  '''
-  Lattice Paths from (0,0) to (2(n-1),0) with steps (1,1), (1,-1) that never fall
-  below the x-axis.
-  Data Type: String
-  Format: words in the alphabet {U,D} where U is a (1,1) step and D is a (1,-1) step.
-  '''
-  RS = 24
+  r"""
+  Dyck Paths of 2(m-1) steps, ie. Lattice Paths from (0,0) to (2(m-1),0) with
+    steps (1,1), (1,-1) that never fall below the x-axis.
+    
+  Data Type:
+    String
+  Format:
+    words in the alphabet {U,D} where U is a (1,1) step and D is a (1,-1) step.
+  Example: (m=5)
+    'UDUUDDUD'
+       /\   
+    /\/  \/\
+  """
+  ID = 'RS25'
   names = {'dyck paths', 'mountains'}
   keywords = {'mountains', 'dyck', 'paths', 'lattice', 'steps', 'geometric', 'U', 'D'}
   generator = lambda: ''
   product = lambda fst, snd: fst + 'U' + snd + 'D'
 
   @classmethod
-  def factorise(mountain):
+  def factorise(cls, mountain):
     assert len(mountain) >= 2
     assert mountain[-1] == 'D'
 
     height = 1 
     for i in range(len(mountain) - 2, -1, -1):
-      height += {'U': 1, 'D': -1}[mountain[i]]
+      height += {'U': -1, 'D': 1}[mountain[i]]
       if height <= 0: break
     else:
       raise ValueError
     
     return (mountain[0:i], mountain[i+1:-1])
-    
 
   @staticmethod
   def to_ascii(mountain, trim_rows=True):
@@ -117,3 +130,41 @@ class RS25(RS24):
       drawing.write(step_char[step], x, y)
 
     return drawing.get_str(trim_rows=trim_rows)
+
+class RS32(RS25):
+  r"""
+  Dyck Paths (see RS25) of length 4(m-1) where any subsequence of consecutive
+    downward steps is exactly length 2.
+  
+  Data Type:
+    String
+  Format:
+    words in the alphabet {U,D} where U is a (1,1) step and D is a (1,-1) step.
+  Generator:
+    ''
+  Example: (m=4)
+    'UUDDUUUDDUDD'
+          /\
+     /\  /  \/\
+    /  \/      \
+  """
+  ID = 'RS32'
+  names = ['Dyck Paths with 2 Descending Steps']
+  keywords = {'dyck', 'path', '2', 'descending', 'step', 'ascii'}
+
+  generator = lambda: ''
+  product = lambda fst, snd: fst + 'U' + snd + 'UDD'
+
+  @classmethod
+  def factorise(cls, dyck_path):
+    assert len(dyck_path) >= 4
+    assert dyck_path[-3:] == 'UDD'
+
+    height = 2
+    for i in range(len(dyck_path) - 3, -1, -1):
+      height += {'U': 1, 'D': -1}[dyck_path[i]]
+      if height <= 0: break
+    else:
+      raise ValueError
+    
+    return (dyck_path[0:i], dyck_path[i+1:-3])

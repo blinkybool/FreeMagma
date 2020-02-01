@@ -1,6 +1,22 @@
 from magma import Catalan, TEX_TEMPLATES_PATH, wrap_tikz_command, wrap_tikz_env, to_tikz_pair_loop
 
-class Triangulations(Catalan):
+class RS1(Catalan):
+  """
+  Permutations a1 a2 ... am-1 of [m-1] with longest decreasing subsequence of
+    length at most 2 (no integers i < j < k such that ai > aj > ak).
+  
+  Data Type:
+    tuple(int)
+  Format:
+    sequences of integers in the set [1,m-1]
+  Generator:
+    ()
+  Example: (m=5)
+    (3,1,2,4)
+  """
+  ID = 'RS1'
+  names = ['Triangulations']
+  keywords = {'triangulation', 'triangle', 'polygon', 'tikz'}
   generator = lambda: ()
   
   @classmethod

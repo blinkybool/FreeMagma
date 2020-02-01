@@ -1,6 +1,7 @@
 from magma import Catalan
 
 class RS197(Catalan):
+<<<<<<< HEAD
   '''
   Non-negative integer sequences (a_i) of length n+1 which generate a valid frieze pattern
    1     1     1     1     1     1     1     1
@@ -17,6 +18,38 @@ class RS197(Catalan):
   Data Type: tuple(int).
   Format: length n+1 sequences of non-negative integers.
   '''
+=======
+  """
+  Non-negative integer sequences (a_i) of length m+1 which generate a valid
+    frieze pattern of m rows,
+
+     1     1     1     1     1     1     1     1
+       a_1   a_2   a_3    .     .     .     .    a_m+1
+          b_1   b_2   b_3    .     .     .     .    b_m+1
+              .     .     .     .     .     .     .     . 
+                 .     .     .     .     .     .     .     . 
+                   z_1   z_2   z_3    .     .     .     .    z_m+1
+                       1     1     1     1     1     1     1     1
+                       
+    where any quadruple of the form below satisfies st-ru = 1.
+         r
+      s     t 
+         u
+
+  Data Type:
+    tuple(int)
+  Format:
+    sequences of non-negative integers.
+  Example: (m=5)
+    (2,2,1,4,1,2)
+
+    1 1 1 1 1 1
+     2 2 1 4 1 2
+      3 1 3 3 1 3
+       1 2 2 2 1 4
+        1 1 1 1 1 1
+  """
+>>>>>>> e4f36df85f061f3cabbcb2af249ff76542394eda
   ID = 'RS197'
   names = ['Frieze Patterns']
   keywords = {'frieze', 'pattern', 'sequence', 'ascii'}

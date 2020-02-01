@@ -2,19 +2,25 @@ from magma import Catalan, AsciiDrawing
 
 class RS57(Catalan):
   """
-  Unordered pairs of lattice paths with n steps each ((0,1) or (1,0)), both
+  Unordered pairs of lattice paths with m steps each ((0,1) or (1,0)), both
     starting at (0,0) and ending at the same point, and otherwise never intersect. 
-  Data Type: tuple(string)
-  Format: an ordered pair of paths (the upper/left path is first in the pair)
+  
+  Data Type:
+    tuple(string)
+  Format:
+    an ordered pair of paths (the upper/left path is first in the pair)
     where a path is a word in the alphabet {N,E}, where N=(1,0), E=(0,1).
-  Generator: ('E','E')
-  Example: (n=5) ('NNNEE', 'ENENN)
+  Generator:
+    ('E','E')
+  Example: (m=5)
+    ('NNNEE', 'ENENN')
      _ _ 
     |   |
     |  _|
     |_|  
   """
-  RS = 57
+  
+  ID = 'RS57'
   names = ['Staircase Polygons', 'Parallelogram Polyominoes']
   keywords = {'staircase', 'polgon', 'parallelogram', 'polyomino', 'lattice', 'path', 'ascii'}
 
