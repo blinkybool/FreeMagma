@@ -17,7 +17,7 @@ class RS197(Catalan):
   Data Type: tuple(int).
   Format: length n+1 sequences of non-negative integers.
   '''
-  RS = 197
+  ID = 'RS197'
   names = ['Frieze Patterns']
   keywords = {'frieze', 'pattern', 'sequence', 'ascii'}
   generator = lambda: (0,0)

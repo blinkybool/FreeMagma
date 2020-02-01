@@ -45,7 +45,7 @@ class RS59(RS61):
   Noncrossing, complete, matchings on 2(n-1) vertices on a circle, i.e. ways of
     connecting 2(n-1) vertices on a circle by non-intersecting chords.
   Data Type: tuple(tuple(int))
-  Format: sequences of n-1 pairs of integers from 1 to 2(n-1) where a pair (i,j)
+  Format: sequence of n-1 pairs of integers from 1 to 2(n-1) where a pair (i,j)
     represents a chord from vertex i to vertex j. No order is imposed on the
     sequence of pairs, nor on the pairs themselves.
   Generator: ()
@@ -61,7 +61,7 @@ class RS59(RS61):
       ' 3     4 ' 
          '''''
   """
-  RS = 61
+  RS = 59
   names = ['Noncrossing Chords']
   keywords = {'nested', 'noncrossing', 'nonintersecting' 'matching', 'chords'}
 

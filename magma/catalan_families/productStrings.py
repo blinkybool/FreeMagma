@@ -11,7 +11,7 @@ class PrefixStrings(Catalan):
   Example: (n=5) '*o**oo*oo'
     this is the product of 'o' with '**oo*oo'
   """
-  RS = None
+  ID = 'MA1'
   names = ['Prefix Product Strings', 'Prefix Strings']
   keyword = {'string', 'prefix', '*', 'o', 'product', 'free', 'magma'}
   
