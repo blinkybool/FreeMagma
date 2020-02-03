@@ -66,20 +66,23 @@ class RS24(Catalan):
     return str(drawing)
 
   @classmethod
-  def tikz_command(cls, dyck_path, with_env=False):
-    x,y = (0,0)
+  def tikz_command(cls, dyck_path, with_env=False, colour_factors=False):
+    if colour_factors:
+      command =  cls.coloured_factors_tikz_command(dyck_path)
+    else:
+      x,y = (0,0)
 
-    step_dir = {'E': (1,0), 'N': (0,1)}
+      step_dir = {'E': (1,0), 'N': (0,1)}
 
-    path = []
+      path = []
 
-    for step in dyck_path:
-      dx,dy = step_dir[step]
-      x += dx
-      y += dy
-      path.append((x,y))
+      for step in dyck_path:
+        dx,dy = step_dir[step]
+        x += dx
+        y += dy
+        path.append((x,y))
 
-    command = wrap_tikz_command('dyckPath', to_tikz_pair_loop(path))
+      command = wrap_tikz_command('dyckPath', to_tikz_pair_loop(path))
 
     return wrap_tikz_env('tikzpicture', command) if with_env else command
 

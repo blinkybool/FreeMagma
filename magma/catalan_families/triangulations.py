@@ -49,14 +49,14 @@ class RS1(Catalan):
   
   @classmethod
   def product(cls, fst, snd):
-    num_fst = cls.direct_norm(fst)
-    num_snd = cls.direct_norm(snd)
+    num_fst = cls.direct_norm(fst)+1
+    num_snd = cls.direct_norm(snd)+1
     num_out = num_fst + num_snd - 1
     return fst + tuple((src+num_fst-1, tar+num_fst-1) for src,tar in snd) + ((1, num_out),)
 
   @classmethod
   def factorise(cls, triangulation):
-    num_vertices = cls.direct_norm(triangulation)
+    num_vertices = cls.direct_norm(triangulation)+1
     split = max((max(chord) for chord in triangulation if 1 in chord and num_vertices not in chord), default=2)
 
     fst = tuple(chord for chord in triangulation if max(chord) <= split)
@@ -70,13 +70,19 @@ class RS1(Catalan):
 
   @classmethod
   def direct_norm(cls, triangulation):
-    return len(triangulation)+2
+    return len(triangulation)+1
 
   @classmethod
-  def tikz_command(cls, triangulation, radius='2', with_env=False):
-    num_vertices = cls.direct_norm(triangulation)
-    chords_tex_format = to_tikz_pair_loop(chord for chord in triangulation if (min(chord), max(chord)) != (1,num_vertices))
-    command = wrap_tikz_command('triangulation', radius, num_vertices, chords_tex_format)
+  def tikz_command(cls, triangulation, radius='2', with_env=False, colour_factors=False):
+    num_vertices = cls.direct_norm(triangulation)+1
+    if colour_factors and triangulation!=cls.generator():
+      split = cls.direct_norm(cls.factorise(triangulation)[0]) + 1
+      red_chords_tex = to_tikz_pair_loop(chord for chord in triangulation if max(chord) <= split) 
+      blue_chords_tex = to_tikz_pair_loop(chord for chord in triangulation if split <= min(chord)) 
+      command = wrap_tikz_command('factoredTriangulation', radius, num_vertices, split, red_chords_tex, blue_chords_tex)
+    else:
+      chords_tex_format = to_tikz_pair_loop(chord for chord in triangulation if (min(chord), max(chord)) != (1,num_vertices))
+      command = wrap_tikz_command('triangulation', radius, num_vertices, chords_tex_format)
     if with_env:
       return wrap_tikz_env('tikzpicture', command)
     else:

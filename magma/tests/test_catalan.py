@@ -7,7 +7,7 @@ class TestCatalan(unittest.TestCase):
 
   def test_identities(self):
 
-    catalan_families = list(Catalan.all_catalan_families())
+    catalan_families = list(Catalan.iter_families())
 
     for Catalan_Family in catalan_families:
       identity = Catalan_Family.identity()
