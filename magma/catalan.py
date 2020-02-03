@@ -29,7 +29,7 @@ class Catalan:
 
   generator = lambda: ()
   product = lambda fst, snd: (fst, snd)
-  factorise = lambda arg: arg
+  factorise = lambda obj: obj
   
   norm_cache = {}
 
@@ -93,7 +93,7 @@ class Catalan:
     raise NotImplementedError
 
   @classmethod
-  def all_catalan_families(cls):
+  def iter_families(cls):
     yield cls
     for family in cls.__subclasses__():
-      yield from family.all_catalan_families()
+      yield from family.iter_families()
