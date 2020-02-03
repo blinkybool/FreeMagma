@@ -1,5 +1,13 @@
 from magma import Catalan, wrap_tikz_env
 
+def to_tikz_forest(tree, style=None):
+  char_map = {'(': '[', ')': ']', ' ': ' '}
+  tikz_tree = ' '.join(char_map.get(char, '') for char in str(tree))
+  if style is None:
+    return tikz_tree
+  else:
+    return '[' + ',' + style +  tikz_tree[1:-1] + ']'
+
 class RS5(Catalan):
   r"""
   Complete Binary Trees with 2m-1 nodes.
@@ -23,11 +31,16 @@ class RS5(Catalan):
   keywords = {'complete', 'binary', 'tree', 'recursive', 'tikz'}
 
   @classmethod
-  def tikz_command(cls, cbt, with_env=False):
-    try:
-      tikz_cbt = 'cbt ' + ''.join({'(': '[', ')': ']', ',': '', ' ':' '}[char] for char in str(cbt))
-    except:
-      raise ValueError
+  def tikz_command(cls, cbt, with_env=False, colour_factors=False):
+    if colour_factors and cbt != cls.generator():
+      fst, snd = cls.factorise(cbt)
+      tikz_cbt = ('cbt ['
+                  + to_tikz_forest(fst, style='red subtree')
+                  + ' '
+                  + to_tikz_forest(snd, style='blue subtree')
+                  + ']')
+    else:
+      tikz_cbt = to_tikz_forest(cbt)
 
     return wrap_tikz_env('forest', tikz_cbt) if with_env else tikz_cbt
 
@@ -101,11 +114,16 @@ class RS6(Catalan):
   factorise  = lambda plane_tree: (plane_tree[:-1], plane_tree[-1])
 
   @classmethod
-  def tikz_command(cls, plane_tree, with_env=False):
-    try:
-      tikz_pt = 'pt ' + ''.join({'(': '[', ')': ']', ',': '', ' ':' '}[char] for char in str(plane_tree))
-    except:
-      raise ValueError
+  def tikz_command(cls, pt, with_env=False, colour_factors=False):
+    if colour_factors and pt != cls.generator():
+      fst, snd = cls.factorise(pt)
+      tikz_pt = ('pt '
+                  + to_tikz_forest(fst, style='red subtree')[:-1]
+                  + ' '
+                  + to_tikz_forest(snd, style='blue subtree')
+                  + ']')
+    else:
+      tikz_pt = 'pt ' + to_tikz_forest(pt)
 
     return wrap_tikz_env('forest', tikz_pt) if with_env else tikz_pt
 
