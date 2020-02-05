@@ -152,9 +152,72 @@ class TwoThreeOneAvoiding(RS115):
 
   @classmethod
   def factorise(cls, perm):
-    split = perm.index(len(perm))
-    fst = perm[:split]
-    snd = tuple(x-len(fst) for x in perm[split+1:])
+    row_split = perm.index(len(perm))
+    fst = perm[:row_split]
+    snd = tuple(x-len(fst) for x in perm[row_split+1:])
 
     return (fst, snd)
+
+class TwoOneThreeAvoiding(RS115):
+  """
+  Permutations a1 a2 ... am-1 of [m-1] with longest decreasing subsequence of
+    length at most 2 (no integers i < j < k such that aj < ai < ak)
   
+  Data Type:
+    tuple(int)
+  Format:
+    sequences of integers in the set [1,m-1]. [0] is considered the empty
+    set, and [1] = {1}
+  Generator:
+    ()
+  Example: (m=5)
+    (4,1,2,3)
+  """
+
+  ID = 'MA??'
+  names = ['213 Avoiding Permutations']
+  keywords = {'permutation', 'sequence', 'avoiding', '213', 'two', 'one', 'three'}
+
+  generator = lambda: ()
+  product = lambda fst, snd: (len(fst) + 1,) + tuple(x+len(fst)+1 for x in snd) + fst
+
+  @classmethod
+  def factorise(cls, perm):
+    column_split = perm[0]
+    row_split = len(perm)-column_split+1
+    fst = perm[row_split:]
+    snd = tuple(x-len(fst)-1 for x in perm[1:row_split])
+
+    return (fst, snd)
+
+
+class OneThreeTwoAvoiding(RS115):
+  """
+  Permutations a1 a2 ... am-1 of [m-1] with longest decreasing subsequence of
+    length at most 2 (no integers i < j < k such that ai < ak < aj)
+  
+  Data Type:
+    tuple(int)
+  Format:
+    sequences of integers in the set [1,m-1]. [0] is considered the empty
+    set, and [1] = {1}
+  Generator:
+    ()
+  Example: (m=5)
+    (3,1,2,4)
+  """
+
+  ID = 'MA??'
+  names = ['132 Avoiding Permutations']
+  keywords = {'permutation', 'sequence', 'avoiding', '132', 'one', 'three', 'two'}
+
+  generator = lambda: ()
+  product = lambda fst, snd: tuple(x+len(fst) for x in snd) + (len(fst) + len(snd) + 1,) + fst
+
+  @classmethod
+  def factorise(cls, perm):
+    row_split = perm.index(len(perm))
+    fst = perm[row_split+1:]
+    snd = tuple(x-len(fst) for x in perm[:row_split])
+
+    return (fst, snd)

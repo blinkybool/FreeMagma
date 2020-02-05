@@ -183,3 +183,51 @@ class RS32(RS25):
   @classmethod
   def direct_norm(cls, dyck_path):
     return len(dyck_path)//4 + 1
+
+
+class RS34(RS25):
+  r"""
+  Dyck Paths (see RS25) with m-1 peaks, with no factors (consecutive steps)
+    UUU or UUDD.
+  
+  Data Type:
+    String
+  Format:
+    words in the alphabet {U,D} where U is a (1,1) step and D is a (1,-1) step.
+  Generator:
+    ''
+  Example: (m=4)
+    'UUDDUUUDDUDD'
+            
+       /\/\    
+    /\/    \    
+  """
+  ID = 'RS34'
+  names = ['Dyck Paths with m-1 peaks']
+  keywords = {'dyck', 'path', 'step', 'peak', 'ascii'}
+
+  generator = lambda: ''
+  product = lambda fst, snd: fst + 'UD' if snd=='' else fst + 'UUD' + snd + 'D'
+
+  @classmethod
+  def factorise(cls, dyck_path):
+    assert len(dyck_path) >= 2
+    assert dyck_path[-1] == 'D'
+
+    height = 1 
+    for i in range(len(dyck_path) - 2, -1, -1):
+      height += {'U': -1, 'D': 1}[dyck_path[i]]
+      if height <= 0: break
+    else:
+      raise ValueError
+    
+    fst = dyck_path[0:i]
+    pre_snd = dyck_path[i+1:-1]
+    snd = pre_snd if pre_snd == cls.generator() else snd[2:]
+
+    return (fst, snd)
+
+  @classmethod
+  def direct_norm(cls, dyck_path):
+    return len(dyck_path)//4 + 1
+
