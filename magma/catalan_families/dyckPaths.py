@@ -223,7 +223,7 @@ class RS34(RS25):
     
     fst = dyck_path[0:i]
     pre_snd = dyck_path[i+1:-1]
-    snd = pre_snd if pre_snd == cls.generator() else snd[2:]
+    snd = pre_snd if pre_snd == cls.generator() else pre_snd[2:]
 
     return (fst, snd)
 
