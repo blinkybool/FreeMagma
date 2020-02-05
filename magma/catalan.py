@@ -51,17 +51,49 @@ class Catalan:
   def products(cls, norm):
     if norm in cls.norm_cache: return cls.norm_cache[norm]
 
-    cls.norm_cache[norm] = list(
-      cls.product(fst, snd)
+    cls.norm_cache[norm] = [
+      cls.cache_product(fst, snd, cls.product(fst, snd))
         for i in range(1,norm)
         for fst in cls.products(i)
         for snd in cls.products(norm - i)
-    )
+    ]
     return cls.norm_cache[norm]
 
   @classmethod
-  def init_norm_cache(cls):
+  def cache_product(cls, fst, snd, prod):
+    cls.prod_cache[fst, snd] = prod
+    cls.fact_cache[prod] = (fst, snd)
+    return prod
+
+  @classmethod
+  def init_caches(cls):
     cls.norm_cache = {1: [cls.generator()]}
+    cls.fact_cache = {}
+    cls.prod_cache = {}
+
+  @classmethod
+  def exhaustive_factorise(cls, obj):
+    assert obj != cls.generator()
+
+    if obj in cls.fact_cache:
+      return cls.fact_cache[obj]
+
+    try:
+      norm = cls.direct_norm(obj)
+      
+      for prod in cls.products(norm):
+        if cls.normalise(prod) == cls.normalise(obj):
+          return cls.fact_cache[prod]
+      else:
+        raise Error(f'No matching object of norm {norm} found')
+
+    except NotImplementedError:
+      norm = 2
+      while True:
+        for prod in cls.products(norm):
+          if cls.normalise(prod) == cls.normalise(obj):
+            return cls.fact_cache[prod]
+        norm += 1
 
   @classmethod
   def verify(cls, obj):

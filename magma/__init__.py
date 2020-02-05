@@ -18,7 +18,7 @@ from .motzkin import *
 from .motzkin_families.motzkinPaths import *
  
 for Catalan_Family in Catalan.iter_families():
-  Catalan_Family.init_norm_cache()
+  Catalan_Family.init_caches()
 
 for Motzkin_Family in Motzkin.iter_families():
-  Motzkin_Family.init_norm_cache()
+  Motzkin_Family.init_caches()

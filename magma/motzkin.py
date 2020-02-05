@@ -57,7 +57,7 @@ class Motzkin:
     return cls.norm_cache[norm]
 
   @classmethod
-  def init_norm_cache(cls):
+  def init_caches(cls):
     cls.norm_cache = {1: [cls.generator()], 2: [cls.unary(cls.generator())]}
 
   @classmethod
