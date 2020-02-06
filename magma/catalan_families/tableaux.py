@@ -1,7 +1,6 @@
 from magma import Catalan
 
-# TODO inherit from Catalan once factorise implemented
-class RS168:
+class RS168(Catalan):
   """
   Standard Young Tableaux of shape (m-1,m-1) 
   
@@ -37,8 +36,15 @@ class RS168:
 
   @classmethod
   def factorise(cls, tableaux):
-    # TODO implement tableaux factorise
-    pass
+    top, bot = tableaux
+    for i in reversed(range(len(top))):
+      if i==0 or bot[i-1] + 1 == top[i]:
+        break
+    
+    fst = (top[:i], bot[:i])
+    shift = lambda x: x - 2 * len(fst[0]) - 1
+    snd = (tuple(map(shift, top[i+1:])), tuple(map(shift, bot[i:-1])))
+    return (fst, snd)
 
   @classmethod
   def direct_norm(cls, tableaux):
@@ -46,8 +52,8 @@ class RS168:
 
   @classmethod
   def to_ascii(cls, tableaux):
-    if tableaux == cls.generator():
-      return '+\n|\n+\n|\n+'
+    # if tableaux == cls.generator():
+    #   return '+\n|\n+\n|\n+'
     num_cols = len(tableaux[0])
     max_digits = len(str(num_cols*2))
 
@@ -55,6 +61,6 @@ class RS168:
 
     ascii_table = row_sep
     for row in tableaux:
-      ascii_table += '\n|' + '|'.join(f'{x:<{max_digits}}' for x in row) + '|\n' +  row_sep
+      ascii_table += '\n|' + ''.join(f'{x:<{max_digits}}|' for x in row) + '\n' +  row_sep
     
     return ascii_table
