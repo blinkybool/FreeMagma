@@ -1,7 +1,11 @@
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 \ProvidesPackage{magma}[2020/01/24 Magma]
 
-\RequirePackage{tikz, forest}
+\RequirePackage{tikz, forest, ifthen}
+
+\newcommand{\leftColour}{red}
+\newcommand{\rightColour}{blue}
+\newcommand{\bothColour}{violet}
 
 \forestset{%
   cbt/.style={
@@ -10,7 +14,7 @@
       draw,
       fill,
       s sep'+=10pt,
-      fit=band,
+    %   fit=band,
       if n children=0{fill=none}{},
     },
     % root node style
@@ -22,19 +26,26 @@
       draw,
       fill,
       s sep'+=10pt,
-      fit=band,
+    %   fit=band,
     },
     % root node style
     where level=0{rectangle, fill=none}{}
   },
+  left/.style={
+    edge=black,
+    for tree={fill=\leftColour, draw=\leftColour},
+    for descendants={edge=\leftColour}
+  },
+  right/.style={
+    edge=black,
+    for tree={fill=\rightColour, draw=\rightColour},
+    for descendants={edge=\rightColour}},
 }
 
 \newcommand{\nthVertexAngle}[2]{{90+360/#1/2+360/#1*(#2-1)}}
 
 \newcommand{\defaultVertexRadius}{3pt}
 \newcommand{\defaultLabelOffset}{0.5}
-
-
 
 \newcommand{\triangulation}[3]{
   % #1 : radius of invisible circle housing the polygon
@@ -57,8 +68,94 @@
 
   % Draw chords
   \foreach \src/\tar in {#3} {
+    \draw[\;e] (\nthVertexAngle{#2}{\src}:#1) -- (\nthVertexAngle{#2}{\tar}:#1);
+  }
+}
+
+\newcommand{\colouredTriangulation}[4]{
+  % #1 : radius of invisible circle housing the polygon
+  % #2 : number of vertices/sides of the polygon
+  % #3 : Vertex at which it splits
+  % #4 : the chords in the triangulations
+  %       - must be comma separated pairs of source and target vertices
+  %         with each pair of the format src/tar
+  %         e.g. 4/6,3/6,2/6
+  
+  % Draw vertices
+  \foreach \i in {1,...,#2} {
+  \draw[fill=\ifthenelse{\i < #3}{\leftColour}{\rightColour}] (\nthVertexAngle{#2}{\i}:#1) circle (\defaultVertexRadius) node at (\nthVertexAngle{#2}{\i}:#1+\defaultLabelOffset) {\i};
+  }
+
+  % Draw boundary
+  \draw 
+    (\nthVertexAngle{#2}{1}:#1)
+    \foreach \i in {2,...,#2} {-- (\nthVertexAngle{#2}{\i}:#1)}
+    -- cycle;
+
+  % Draw chords
+  \foreach \src/\tar in {#4} {
+    \draw (\nthVertexAngle{#2}{\src}:#1) -- (\nthVertexAngle{#2}{\tar}:#1);
+  }
+}
+
+\newcommand{\factoredTriangulation}[5]{
+  % #1 : radius of invisible circle housing the polygon
+  % #2 : number of vertices/sides of the polygon
+  % #3 : vertex at which the triangulation splits
+  % #4 : internal chords in the left factor triangulation
+  % #5 : internal chords in the right factor triangulation
+  %       - must be comma separated pairs of source and target vertices
+  %         with each pair of the format src/tar
+  %         e.g. 4/6,3/6,2/6
+
+  
+  \draw[fill=red!10, draw=black] (\nthVertexAngle{#2}{1}:#1)
+  \foreach \i in {2,...,#3} {-- (\nthVertexAngle{#2}{\i}:#1) }
+  -- cycle;
+   
+  \draw[fill=blue!10, draw=black] (\nthVertexAngle{#2}{#2}:#1)
+  \foreach \i in {#3,...,#2} {-- (\nthVertexAngle{#2}{\i}:#1) };
+
+  % Draw red boundary
+  \draw[red] 
+    (\nthVertexAngle{#2}{1}:#1)
+    \foreach \i in {2,...,#3} {-- (\nthVertexAngle{#2}{\i}:#1)};
+    
+  % Draw blue boundary
+  \draw[blue] 
+    (\nthVertexAngle{#2}{#3}:#1)
+    \foreach \i in {#3,...,#2} {-- (\nthVertexAngle{#2}{\i}:#1)};
+    
+  % Draw top edge
+  \draw (\nthVertexAngle{#2}{#2}:#1) -- (\nthVertexAngle{#2}{1}:#1);
+
+  % Draw red chords
+  \foreach \src/\tar in {#4} {
     \draw[red] (\nthVertexAngle{#2}{\src}:#1) -- (\nthVertexAngle{#2}{\tar}:#1);
   }
+    
+  % Draw blue chords
+  \foreach \src/\tar in {#5} {
+    \draw[blue] (\nthVertexAngle{#2}{\src}:#1) -- (\nthVertexAngle{#2}{\tar}:#1);
+  }
+    
+  % Draw red vertices
+  \foreach \i in  {1,...,#3} {
+  \ifnum\i<#3{
+    \draw[red, fill=red] (\nthVertexAngle{#2}{\i}:#1) circle (\defaultVertexRadius) node[black] at (\nthVertexAngle{#2}{\i}:#1+\defaultLabelOffset) {\i};
+  }\fi
+  }
+  
+  % Draw purple shared vertex
+  \draw[violet, fill=violet] (\nthVertexAngle{#2}{#3}:#1) circle (\defaultVertexRadius) node[black] at (\nthVertexAngle{#2}{#3}:#1+\defaultLabelOffset) {#3};
+   
+  % Draw blue vertices
+  \foreach \i in  {#3,...,#2} {
+  \ifnum\i>#3{
+    \draw[blue, fill=blue] (\nthVertexAngle{#2}{\i}:#1) circle (\defaultVertexRadius) node[black] at (\nthVertexAngle{#2}{\i}:#1+\defaultLabelOffset) {\i};
+  }\fi
+  }
+  
 }
 
 \newcommand{\nonCrossingChords}[3]{
@@ -85,17 +182,16 @@
   }
 }
 
+
 \newcommand{\arches}[2]{
-  \newcommand{\n}{#1}
-  \newcommand{\vertexRadius}{3pt}
   
-  \draw (1,0) -- (\n,0);
+  \draw (1,0) -- (#1,0);
   % Draw vertices
-  \draw[fill] (1,0) circle (\vertexRadius);
+  \draw[fill] (1,0) circle (\defaultVertexRadius);
   
   \ifnum0<#1
-  \foreach \i in {2,...,\n} {
-    \draw[fill] (\i,0) circle (\vertexRadius);
+  \foreach \i in {2,...,#1} {
+    \draw[fill] (\i,0) circle (\defaultVertexRadius);
   }
   \fi
   
@@ -104,9 +200,67 @@
   }
 }
 
-\newcommand{\dyckPath}[1]{
-  \draw (0,0) 
-    \foreach \x/\y in {#1} {-- (\x,\y)} 
-  -- cycle;
+\newcommand{\factoredArches}[3]{
+  % #1 : number of vertices
+  % #2 : split
+  % #3 : arches
+  % 
+  
+  \draw (1,0) -- (#1,0);
+  % Draw vertices
+  \draw[fill] (1,0) circle (\defaultVertexRadius);
+  
+  \ifnum0<#1
+  \foreach \i in {2,...,#1} {
+    \draw[fill] (\i,0) circle (\defaultVertexRadius);
+  }
+  \fi
+  
+  \foreach \src/\tar in {#3} {
+    \ifthenelse{max(\src,\tar) < #2}
+      {\draw[red] (\tar,0) arc (0:180:{(\tar-\src)/2});}
+      {\ifthenelse{max(\src,\tar) > #1}
+        {\draw[red] (\tar,0) arc (0:180:{(\tar-\src)/2});}
+        {\draw[black] (\tar,0) arc (0:180:{(\tar-\src)/2});}
+      }
+    
+  }
 }
+
+\newcommand{\dyckPath}[2]{
+  % #1 : num steps
+  % #2 : path
+  \draw[step=1,black,thin] (0,0) grid (#1, #1/2);
+  
+  \draw[red, ultra thick] (0,0) 
+    \foreach \x/\y in {#2} {-- (\x,\y)};
+    
+  \draw[fill=red,draw=none] (0,0) circle (\defaultVertexRadius);
+  \draw[fill=red,draw=none] (#1,0) circle (\defaultVertexRadius);
+}
+
+\newcommand{\factoredDyckPath}[4]{
+  % #1 : num left factor steps
+  % #2 : left factor path
+  % #3 : num right factor steps
+  % #4 : right factor path
+  \draw[step=1,black,thin] (0,0) grid (#1+#3+2, {(#1+#3)/2 + 1});
+  
+  
+  \draw[red, ultra thick] (0,0) 
+    \foreach \x/\y in {#2} {-- (\x,\y)};
+    
+  \draw[ultra thick] (#1,0) -- (#1+1,1);
+    
+  \draw[blue, ultra thick] (#1+1,1)
+    \foreach \x/\y in {#4} {-- (\x,\y)};
+    
+  \draw[ultra thick] (#1+#3+1,1) -- (#1+#3+2,0);
+    
+  \draw[fill=red,draw=none] (0,0) circle (\defaultVertexRadius);
+  \draw[fill=red,draw=none] (#1,0) circle (\defaultVertexRadius);
+  \draw[fill=blue,draw=none] (#1+1,1) circle (\defaultVertexRadius);
+  \draw[fill=blue,draw=none] (#1+#3+1,1) circle (\defaultVertexRadius);
+}
+
 \endinput
