@@ -68,32 +68,6 @@
 
   % Draw chords
   \foreach \src/\tar in {#3} {
-    \draw[\;e] (\nthVertexAngle{#2}{\src}:#1) -- (\nthVertexAngle{#2}{\tar}:#1);
-  }
-}
-
-\newcommand{\colouredTriangulation}[4]{
-  % #1 : radius of invisible circle housing the polygon
-  % #2 : number of vertices/sides of the polygon
-  % #3 : Vertex at which it splits
-  % #4 : the chords in the triangulations
-  %       - must be comma separated pairs of source and target vertices
-  %         with each pair of the format src/tar
-  %         e.g. 4/6,3/6,2/6
-  
-  % Draw vertices
-  \foreach \i in {1,...,#2} {
-  \draw[fill=\ifthenelse{\i < #3}{\leftColour}{\rightColour}] (\nthVertexAngle{#2}{\i}:#1) circle (\defaultVertexRadius) node at (\nthVertexAngle{#2}{\i}:#1+\defaultLabelOffset) {\i};
-  }
-
-  % Draw boundary
-  \draw 
-    (\nthVertexAngle{#2}{1}:#1)
-    \foreach \i in {2,...,#2} {-- (\nthVertexAngle{#2}{\i}:#1)}
-    -- cycle;
-
-  % Draw chords
-  \foreach \src/\tar in {#4} {
     \draw (\nthVertexAngle{#2}{\src}:#1) -- (\nthVertexAngle{#2}{\tar}:#1);
   }
 }
