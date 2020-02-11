@@ -35,9 +35,9 @@ class RS5(Catalan):
     if colour_factors and cbt != cls.generator():
       fst, snd = cls.factorise(cbt)
       tikz_cbt = ('cbt ['
-                  + to_tikz_forest(fst, style='red subtree')
+                  + to_tikz_forest(fst, style='left')
                   + ' '
-                  + to_tikz_forest(snd, style='blue subtree')
+                  + to_tikz_forest(snd, style='right')
                   + ']')
     else:
       tikz_cbt = to_tikz_forest(cbt)
@@ -118,9 +118,9 @@ class RS6(Catalan):
     if colour_factors and pt != cls.generator():
       fst, snd = cls.factorise(pt)
       tikz_pt = ('pt '
-                  + to_tikz_forest(fst, style='red subtree')[:-1]
+                  + to_tikz_forest(fst, style='left')[:-1]
                   + ' '
-                  + to_tikz_forest(snd, style='blue subtree')
+                  + to_tikz_forest(snd, style='right')
                   + ']')
     else:
       tikz_pt = 'pt ' + to_tikz_forest(pt)
