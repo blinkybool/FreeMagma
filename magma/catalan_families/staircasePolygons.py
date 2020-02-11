@@ -1,4 +1,4 @@
-from magma import Catalan, AsciiDrawing
+from magma import Catalan, AsciiDrawing, wrap_tikz_command, wrap_tikz_env, embed_lattice_path, to_tikz_pair_loop
 
 class RS57(Catalan):
   """
@@ -97,3 +97,23 @@ class RS57(Catalan):
         y += dy
     
     return str(ascii_drawing)
+
+  @classmethod
+  def tikz(cls, polyomino):
+    norm = cls.direct_norm(polyomino)
+    lines = [f'\\draw[step=1,black,thin] (0,0) grid ({norm-1},{norm-1});',
+              f'\\draw (0,0) circle (\\defaultVertexRadius);',
+              ]
+    for path in polyomino:
+      lines.append(r'\draw[ultra thick] (0,0)')
+      coords = list(embed_lattice_path(path, step_dir={'N': (0,1), 'E':(1,0)}))
+      lines.append('  \\foreach \\x,\\y in ' + '{' + to_tikz_pair_loop(coords) + '}{ -- (\\x,\\y)};')
+
+
+    lines.append(f'\\draw {coords[-1]} circle (\\defaultVertexRadius);')
+
+    return wrap_tikz_env('tikzpicture', '\n'.join(lines))
+    
+
+
+
