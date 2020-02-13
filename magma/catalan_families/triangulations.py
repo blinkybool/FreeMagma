@@ -73,16 +73,16 @@ class RS1(Catalan):
     return len(triangulation)+1
 
   @classmethod
-  def tikz_command(cls, triangulation, radius='2', with_env=False, colour_factors=False):
+  def tikz_command(cls, triangulation, with_env=False, colour_factors=False):
     num_vertices = cls.direct_norm(triangulation)+1
     if colour_factors and triangulation!=cls.generator():
       split = cls.direct_norm(cls.factorise(triangulation)[0]) + 1
       red_chords_tex = to_tikz_pair_loop(chord for chord in triangulation if max(chord) <= split) 
       blue_chords_tex = to_tikz_pair_loop(chord for chord in triangulation if split <= min(chord)) 
-      command = wrap_tikz_command('factoredTriangulation', radius, num_vertices, split, red_chords_tex, blue_chords_tex)
+      command = wrap_tikz_command('factoredTriangulation', num_vertices, split, red_chords_tex, blue_chords_tex)
     else:
       chords_tex_format = to_tikz_pair_loop(chord for chord in triangulation if (min(chord), max(chord)) != (1,num_vertices))
-      command = wrap_tikz_command('triangulation', radius, num_vertices, chords_tex_format)
+      command = wrap_tikz_command('triangulation', num_vertices, chords_tex_format)
     if with_env:
       return wrap_tikz_env('tikzpicture', command)
     else:

@@ -46,11 +46,17 @@ class RS61(Catalan):
 
   @classmethod
   def direct_norm(cls, matching):
-    return len(matching)//2 + 1
+    return len(matching) + 1
 
   @classmethod
-  def tikz_command(cls, arches, with_env=False):
-    command = wrap_tikz_command('arches', 2*len(arches), to_tikz_pair_loop(arches))
+  def tikz_command(cls, matching, with_env=False, colour_factors=False):
+    if colour_factors and cls.direct_norm(matching) > 1:
+      fst, snd = cls.factorise(matching)
+      fst_size, snd_size = len(fst)*2, len(snd)*2
+      shifted_snd = ((src+fst_size+1, tar+fst_size+1) for (src,tar) in snd)
+      command = wrap_tikz_command('factoredArches', fst_size, to_tikz_pair_loop(fst), snd_size, to_tikz_pair_loop(shifted_snd))
+    else:
+      command = wrap_tikz_command('arches', 2*len(matching), to_tikz_pair_loop(matching))
     return wrap_tikz_env('tikzpicture', command) if with_env else command
   
 class RS59(RS61):

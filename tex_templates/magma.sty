@@ -3,22 +3,30 @@
 
 \RequirePackage{tikz, forest, options, ifthen}
 
-\newcommand{\leftColour}{red}
-\newcommand{\rightColour}{blue}
-\newcommand{\bothColour}{violet}
+\newcommand{\fstColour}{orange!90!black}
+\newcommand{\sndColour}{blue}
+% \definecolor{sndColour}{RGB}{64, 115, 158}
+\newcommand{\bothColour}{red!85!black}
+
+% \tikzset{fstColour/.style={orange!90!black} }
+% \tikzset{sndColour/.style={cyan!75!black} }
 
 \forestset{%
   cbt/.style={
+    minimum size=5mm,
     for tree={
+      edge={black, line width=5pt},
+      inner sep=6pt,
+      % outer sep=0pt,
       circle,
       draw,
       fill,
-      s sep'+=10pt,
+      s sep = 10mm,
     %   fit=band,
-      if n children=0{fill=none}{},
+      % if n children=0{fill=none}{},
     },
     % root node style
-    where level=0{rectangle, fill=none}{}
+    where level=0{black}{}
   },
   pt/.style={
     for tree={
@@ -29,108 +37,189 @@
     %   fit=band,
     },
     % root node style
-    where level=0{rectangle, fill=none}{}
+    where level=0{fill=black}{}
   },
-  left/.style={
-    edge=black,
-    for tree={fill=\leftColour, draw=\leftColour},
-    for descendants={edge=\leftColour}
+  left/.append style={
+    edge={black},
+    for tree={fill=\fstColour, draw=\fstColour},
+    for descendants={edge=\fstColour}
   },
-  right/.style={
-    edge=black,
-    for tree={fill=\rightColour, draw=\rightColour},
-    for descendants={edge=\rightColour}},
+  right/.append style={
+    edge={black},
+    for tree={fill=\sndColour, draw=\sndColour},
+    for descendants={edge=\sndColour}},
 }
 
 \newcommand{\nthAngle}[2]{{90+360/#1/2+360/#1*(#2-1)}}
 
 \newcommand{\defaultVertexRadius}{3pt}
 \newcommand{\defaultLabelOffset}{0.5}
+\newcommand{\defaultRadius}{1}
 
 
-\newcommand{\triangulation}[3]{
-  % #1 : options
-  % #2 : number of vertices/sides of the polygon
-  % #3 : the chords in the triangulations
+\newcommand{\triangulation}[2]{
+  % #1 : number of vertices/sides of the polygon
+  % #2 : the chords in the triangulations
   %       - must be comma separated pairs of source and target vertices
   %         with each pair of the format src/tar
   %         e.g. 4/6,3/6,2/6
   
   % Draw vertices
-  \foreach \i in {1,...,#2} {
-    \draw[fill] (\nthAngle{#2}{\i}:#1) circle (\defaultVertexRadius) node at (\nthAngle{#2}{\i}:#1+\defaultLabelOffset) {\i};
+  \foreach \i in {1,...,#1} {
+    \draw[fill] (\nthAngle{#1}{\i}:\defaultRadius) circle;
   }
 
   % Draw boundary
   \draw 
-    (\nthAngle{#2}{1}:\option{radius})
-    \foreach \i in {2,...,#2} {-- (\nthAngle{#2}{\i}:#1)}
+    (\nthAngle{#1}{1}:\defaultRadius)
+    \foreach \i in {2,...,#1} {-- (\nthAngle{#1}{\i}:\defaultRadius)}
     -- cycle;
 
   % Draw chords
-  \foreach \src/\tar in {#3} {
-    \draw (\nthAngle{#2}{\src}:#1) -- (\nthAngle{#2}{\tar}:#1);
+  \foreach \src/\tar in {#2} {
+    \draw (\nthAngle{#1}{\src}:\defaultRadius) -- (\nthAngle{#1}{\tar}:\defaultRadius);
+  }
+
+}
+
+\newcommand{\labelledTriangulation}[2]{
+  % #1 : number of vertices/sides of the polygon
+  % #2 : the chords in the triangulations
+  %       - must be comma separated pairs of source and target vertices
+  %         with each pair of the format src/tar
+  %         e.g. 4/6,3/6,2/6
+  
+  % Draw vertices
+  \foreach \i in {1,...,#1} {
+    \draw[fill] (\nthAngle{#1}{\i}:\defaultRadius) circle (\defaultVertexRadius) node at (\nthAngle{#1}{\i}:\defaultRadius+\defaultLabelOffset) {\i};
+  }
+
+  % Draw boundary
+  \draw 
+    (\nthAngle{#1}{1}:\defaultRadius)
+    \foreach \i in {2,...,#1} {-- (\nthAngle{#1}{\i}:\defaultRadius)}
+    -- cycle;
+
+  % Draw chords
+  \foreach \src/\tar in {#2} {
+    \draw (\nthAngle{#1}{\src}:\defaultRadius) -- (\nthAngle{#1}{\tar}:\defaultRadius);
   }
 
 }
 
 
 
-\newcommand{\factoredTriangulation}[5]{
-  % #1 : radius of invisible circle housing the polygon
-  % #2 : number of vertices/sides of the polygon
-  % #3 : vertex at which the triangulation splits
-  % #4 : internal chords in the left factor triangulation
-  % #5 : internal chords in the right factor triangulation
+\newcommand{\factoredTriangulation}[4]{
+  % #1 : number of vertices/sides of the polygon
+  % #2 : vertex at which the triangulation splits
+  % #3 : internal chords in the left factor triangulation
+  % #4 : internal chords in the right factor triangulation
   %       - must be comma separated pairs of source and target vertices
   %         with each pair of the format src/tar
   %         e.g. 4/6,3/6,2/6
 
-  
-  \draw[fill=red!10, draw=black] (\nthAngle{#2}{1}:#1)
-  \foreach \i in {2,...,#3} {-- (\nthAngle{#2}{\i}:#1) }
+  \draw[fill=\fstColour!20, draw=black] (\nthAngle{#1}{1}:\defaultRadius)
+  \foreach \i in {2,...,#2} {-- (\nthAngle{#1}{\i}:\defaultRadius) }
   -- cycle;
    
-  \draw[fill=blue!10, draw=black] (\nthAngle{#2}{#2}:#1)
-  \foreach \i in {#3,...,#2} {-- (\nthAngle{#2}{\i}:#1) };
+  \draw[fill=\sndColour!20, draw=black] (\nthAngle{#1}{#1}:\defaultRadius)
+  \foreach \i in {#2,...,#1} {-- (\nthAngle{#1}{\i}:\defaultRadius) };
 
-  % Draw red boundary
-  \draw[red] 
-    (\nthAngle{#2}{1}:#1)
-    \foreach \i in {2,...,#3} {-- (\nthAngle{#2}{\i}:#1)};
+  % Draw fst factor boundary
+  \draw[\fstColour] 
+    (\nthAngle{#1}{1}:\defaultRadius)
+    \foreach \i in {2,...,#2} {-- (\nthAngle{#1}{\i}:\defaultRadius)};
     
-  % Draw blue boundary
-  \draw[blue] 
-    (\nthAngle{#2}{#3}:#1)
-    \foreach \i in {#3,...,#2} {-- (\nthAngle{#2}{\i}:#1)};
+  % Draw snd factor boundary
+  \draw[\sndColour] 
+    (\nthAngle{#1}{#2}:\defaultRadius)
+    \foreach \i in {#2,...,#1} {-- (\nthAngle{#1}{\i}:\defaultRadius)};
     
   % Draw top edge
-  \draw (\nthAngle{#2}{#2}:#1) -- (\nthAngle{#2}{1}:#1);
+  \draw (\nthAngle{#1}{#1}:\defaultRadius) -- (\nthAngle{#1}{1}:\defaultRadius);
 
-  % Draw red chords
+  % Draw fst factor chords
+  \foreach \src/\tar in {#3} {
+    \draw[\fstColour] (\nthAngle{#1}{\src}:\defaultRadius) -- (\nthAngle{#1}{\tar}:\defaultRadius);
+  }
+    
+  % Draw snd factor chords
   \foreach \src/\tar in {#4} {
-    \draw[red] (\nthAngle{#2}{\src}:#1) -- (\nthAngle{#2}{\tar}:#1);
+    \draw[\sndColour] (\nthAngle{#1}{\src}:\defaultRadius) -- (\nthAngle{#1}{\tar}:\defaultRadius);
   }
     
-  % Draw blue chords
-  \foreach \src/\tar in {#5} {
-    \draw[blue] (\nthAngle{#2}{\src}:#1) -- (\nthAngle{#2}{\tar}:#1);
-  }
-    
-  % Draw red vertices
-  \foreach \i in  {1,...,#3} {
-  \ifnum\i<#3{
-    \draw[red, fill=red] (\nthAngle{#2}{\i}:#1) circle (\defaultVertexRadius) node[black] at (\nthAngle{#2}{\i}:#1+\defaultLabelOffset) {\i};
+  % Draw fst factor vertices
+  \foreach \i in  {1,...,#2} {
+  \ifnum\i<#2{
+    \draw[\fstColour, fill=\fstColour] (\nthAngle{#1}{\i}:\defaultRadius) circle;
   }\fi
   }
   
-  % Draw purple shared vertex
-  \draw[violet, fill=violet] (\nthAngle{#2}{#3}:#1) circle (\defaultVertexRadius) node[black] at (\nthAngle{#2}{#3}:#1+\defaultLabelOffset) {#3};
+  % Draw shared vertex
+  \draw[\bothColour, fill=\bothColour] (\nthAngle{#1}{#2}:\defaultRadius) circle;
    
-  % Draw blue vertices
-  \foreach \i in  {#3,...,#2} {
-  \ifnum\i>#3{
-    \draw[blue, fill=blue] (\nthAngle{#2}{\i}:#1) circle (\defaultVertexRadius) node[black] at (\nthAngle{#2}{\i}:#1+\defaultLabelOffset) {\i};
+  % Draw snd factor vertices
+  \foreach \i in  {#2,...,#1} {
+  \ifnum\i>#2{
+    \draw[\sndColour, fill=\sndColour] (\nthAngle{#1}{\i}:\defaultRadius) circle;
+  }\fi
+  }
+  
+}
+
+\newcommand{\factoredLabelledTriangulation}[4]{
+  % #1 : number of vertices/sides of the polygon
+  % #2 : vertex at which the triangulation splits
+  % #3 : internal chords in the left factor triangulation
+  % #4 : internal chords in the right factor triangulation
+  %       - must be comma separated pairs of source and target vertices
+  %         with each pair of the format src/tar
+  %         e.g. 4/6,3/6,2/6
+
+  \draw[fill=\fstColour!20, draw=black] (\nthAngle{#1}{1}:\defaultRadius)
+  \foreach \i in {2,...,#2} {-- (\nthAngle{#1}{\i}:\defaultRadius) }
+  -- cycle;
+   
+  \draw[fill=\sndColour!20, draw=black] (\nthAngle{#1}{#1}:\defaultRadius)
+  \foreach \i in {#2,...,#1} {-- (\nthAngle{#1}{\i}:\defaultRadius) };
+
+  % Draw fst factor boundary
+  \draw[\fstColour] 
+    (\nthAngle{#1}{1}:\defaultRadius)
+    \foreach \i in {2,...,#2} {-- (\nthAngle{#1}{\i}:\defaultRadius)};
+    
+  % Draw snd factor boundary
+  \draw[\sndColour] 
+    (\nthAngle{#1}{#2}:\defaultRadius)
+    \foreach \i in {#2,...,#1} {-- (\nthAngle{#1}{\i}:\defaultRadius)};
+    
+  % Draw top edge
+  \draw (\nthAngle{#1}{#1}:\defaultRadius) -- (\nthAngle{#1}{1}:\defaultRadius);
+
+  % Draw fst factor chords
+  \foreach \src/\tar in {#3} {
+    \draw[\fstColour] (\nthAngle{#1}{\src}:\defaultRadius) -- (\nthAngle{#1}{\tar}:\defaultRadius);
+  }
+    
+  % Draw snd factor chords
+  \foreach \src/\tar in {#4} {
+    \draw[\sndColour] (\nthAngle{#1}{\src}:\defaultRadius) -- (\nthAngle{#1}{\tar}:\defaultRadius);
+  }
+    
+  % Draw fst factor vertices
+  \foreach \i in  {1,...,#2} {
+  \ifnum\i<#2{
+    \draw[\fstColour, fill=\fstColour] (\nthAngle{#1}{\i}:\defaultRadius) circle node[black] at (\nthAngle{#1}{\i}:\defaultRadius+\defaultLabelOffset) {\i};
+  }\fi
+  }
+  
+  % Draw shared vertex
+  \draw[\bothColour, fill=\bothColour] (\nthAngle{#1}{#2}:\defaultRadius) circle node[black] at (\nthAngle{#1}{#2}:\defaultRadius+\defaultLabelOffset) {#2};
+   
+  % Draw snd factor vertices
+  \foreach \i in  {#2,...,#1} {
+  \ifnum\i>#2{
+    \draw[\sndColour, fill=\sndColour] (\nthAngle{#1}{\i}:\defaultRadius) circle node[black] at (\nthAngle{#1}{\i}:\defaultRadius+\defaultLabelOffset) {\i};
   }\fi
   }
   
@@ -178,31 +267,29 @@
   }
 }
 
-\newcommand{\factoredArches}[3]{
-  % #1 : number of vertices
-  % #2 : split
-  % #3 : arches
-  % 
-  
-  \draw (1,0) -- (#1,0);
-  % Draw vertices
-  \draw[fill] (1,0) circle (\defaultVertexRadius);
-  
-  \ifnum0<#1
-  \foreach \i in {2,...,#1} {
-    \draw[fill] (\i,0) circle (\defaultVertexRadius);
+\newcommand{\factoredArches}[4]{
+  % #1 : num fst factor vertices
+  % #2 : fst factor arches
+  % #3 : num snd factor vertices
+  % #4 : snd factor arches
+
+  \draw (1,0) -- (#1+#3+2,0);
+
+  \foreach \src/\tar in {#2} {
+    \draw[draw=none,fill=\fstColour] (\src,0) circle;
+    \draw[draw=none,fill=\fstColour] (\tar,0) circle;
+    \draw[\fstColour] (\tar,0) arc (0:180:{(\tar-\src)/2});
   }
-  \fi
   
-  \foreach \src/\tar in {#3} {
-    \ifthenelse{max(\src,\tar) < #2}
-      {\draw[red] (\tar,0) arc (0:180:{(\tar-\src)/2});}
-      {\ifthenelse{max(\src,\tar) > #1}
-        {\draw[red] (\tar,0) arc (0:180:{(\tar-\src)/2});}
-        {\draw[black] (\tar,0) arc (0:180:{(\tar-\src)/2});}
-      }
-    
+  \foreach \src/\tar in {#4} {
+    \draw[draw=none,fill=\sndColour] (\src,0) circle;
+    \draw[draw=none,fill=\sndColour] (\tar,0) circle;
+    \draw[\sndColour] (\tar,0) arc (0:180:{(\tar-\src)/2});
   }
+  
+  \draw[draw=none,fill] (#1+1,0) circle;
+  \draw[draw=none,fill] (#1+#3+2,0) circle;
+  \draw (#1+#3+2,0) arc (0:180:{(#3+1)/2});
 }
 
 \newcommand{\dyckPath}[2]{
@@ -218,27 +305,27 @@
 }
 
 \newcommand{\factoredDyckPath}[4]{
-  % #1 : num left factor steps
-  % #2 : left factor path
-  % #3 : num right factor steps
-  % #4 : right factor path
+  % #1 : num fst factor steps
+  % #2 : fst factor path
+  % #3 : num snd factor steps
+  % #4 : snd factor path
   \draw[step=1,black,thin] (0,0) grid (#1+#3+2, {(#1+#3)/2 + 1});
   
   
-  \draw[red, ultra thick] (0,0) 
+  \draw[\fstColour, ultra thick] (0,0) 
     \foreach \x/\y in {#2} {-- (\x,\y)};
     
   \draw[ultra thick] (#1,0) -- (#1+1,1);
     
-  \draw[blue, ultra thick] (#1+1,1)
+  \draw[\sndColour, ultra thick] (#1+1,1)
     \foreach \x/\y in {#4} {-- (\x,\y)};
     
   \draw[ultra thick] (#1+#3+1,1) -- (#1+#3+2,0);
     
-  \draw[fill=red,draw=none] (0,0) circle (\defaultVertexRadius);
-  \draw[fill=red,draw=none] (#1,0) circle (\defaultVertexRadius);
-  \draw[fill=blue,draw=none] (#1+1,1) circle (\defaultVertexRadius);
-  \draw[fill=blue,draw=none] (#1+#3+1,1) circle (\defaultVertexRadius);
+  \draw[fill=\fstColour,draw=none] (0,0) circle (\defaultVertexRadius);
+  \draw[fill=\fstColour,draw=none] (#1,0) circle (\defaultVertexRadius);
+  \draw[fill=\sndColour,draw=none] (#1+1,1) circle (\defaultVertexRadius);
+  \draw[fill=\sndColour,draw=none] (#1+#3+1,1) circle (\defaultVertexRadius);
 }
 
 \endinput

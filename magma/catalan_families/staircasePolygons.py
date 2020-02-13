@@ -1,4 +1,4 @@
-from magma import Catalan, AsciiDrawing, wrap_tikz_command, wrap_tikz_env, embed_lattice_path, to_tikz_pair_loop
+from magma import Catalan, AsciiDrawing, wrap_tikz_command, wrap_tikz_env, embed_lattice_path, to_tikz_pair_loop, tikz_path
 
 class RS57(Catalan):
   """
@@ -99,20 +99,49 @@ class RS57(Catalan):
     return str(ascii_drawing)
 
   @classmethod
-  def tikz(cls, polyomino):
+  def tikz(cls, polyomino, colour_factors=False, with_env=False):
     norm = cls.direct_norm(polyomino)
-    lines = [f'\\draw[step=1,black,thin] (0,0) grid ({norm-1},{norm-1});',
-              f'\\draw (0,0) circle (\\defaultVertexRadius);',
-              ]
-    for path in polyomino:
-      lines.append(r'\draw[ultra thick] (0,0)')
-      coords = list(embed_lattice_path(path, step_dir={'N': (0,1), 'E':(1,0)}))
-      lines.append('  \\foreach \\x,\\y in ' + '{' + to_tikz_pair_loop(coords) + '}{ -- (\\x,\\y)};')
+    lines = [f'\\draw[step=1,gray,thin] (0,0) grid ({norm-1},{norm-1});']
+    left, right = polyomino
+    leftCoords = list(embed_lattice_path(left, step_dir={'N': (0,1), 'E':(1,0)}))
+    rightCoords = list(embed_lattice_path(right, step_dir={'N': (0,1), 'E':(1,0)}))
+
+    
+    if colour_factors and norm > 1:
+
+      fst, _ = cls.factorise(polyomino)
+      fst_norm = cls.direct_norm(fst)
+
+      shiftedSndRightCoords = [(x,y+1) for x,y in rightCoords[fst_norm-1:-1]]
+
+      lines.append(tikz_path(leftCoords[:fst_norm+1] + rightCoords[fst_norm-1::-1], options='draw=none, fill=\\fstColour, opacity=.2'))
+      lines.append(tikz_path(leftCoords[fst_norm:] + shiftedSndRightCoords[::-1], options='draw=none, fill=\\sndColour, opacity=.2'))
+
+      lines.append(tikz_path(leftCoords[:fst_norm+1], options='\\fstColour'))
+      lines.append(tikz_path(rightCoords[:fst_norm], options='\\fstColour'))
+
+      lines.append(tikz_path(leftCoords[fst_norm:], options='\\sndColour'))
+      lines.append(tikz_path(rightCoords[fst_norm-1:-1], options='\\sndColour'))
+      lines.append(tikz_path(rightCoords[-2:]))
 
 
-    lines.append(f'\\draw {coords[-1]} circle (\\defaultVertexRadius);')
 
-    return wrap_tikz_env('tikzpicture', '\n'.join(lines))
+      lines.append(f'\\draw[draw=none, fill=\\fstColour] {leftCoords[0]} circle;')
+      lines.append(f'\\draw[draw=none, fill=\\bothColour] {leftCoords[fst_norm]} circle;')
+      lines.append(f'\\draw[draw=none, fill=\\sndColour] {leftCoords[-1]} circle;')
+
+    else:
+      lines.append(tikz_path(leftCoords))
+      lines.append(tikz_path(rightCoords))
+
+      lines.append(f'\\draw[fill] {leftCoords[0]} circle;')
+      lines.append(f'\\draw[fill] {leftCoords[-1]} circle;')
+
+
+    if with_env:
+      return wrap_tikz_env('tikzpicture', '\n'.join(lines))
+    else:
+      return '\n'.join(lines)
     
 
 

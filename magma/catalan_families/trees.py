@@ -40,7 +40,7 @@ class RS5(Catalan):
                   + to_tikz_forest(snd, style='right')
                   + ']')
     else:
-      tikz_cbt = to_tikz_forest(cbt)
+      tikz_cbt = 'cbt ' + to_tikz_forest(cbt)
 
     return wrap_tikz_env('forest', tikz_cbt) if with_env else tikz_cbt
 
